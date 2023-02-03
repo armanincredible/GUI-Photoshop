@@ -11,10 +11,10 @@
 #include <windows.h>
 #endif
 
-int WidgetAdapterPaint(WidgetManager* widget, QPainter* painter);
+int WidgetAdapterPaint(WidgetManager* widget);
 WidgetManager* from_iwidget_to_widget(IWidget* widget);
 int controller_adapter_widget (Button* button, WidgetManager* widget);
-int ToolActivityAdapter(Tool* tool, QPainter* painter, Point p);
+int ToolActivityAdapter(Tool* tool, WidgetManager* painter, Point p);
 
 class ToolAdapter: public Tool
 {
@@ -35,7 +35,7 @@ class WidgetAdapter : public WidgetManager
 {
 public:
     IWidget* iwidget_ = NULL;
-    QImage src_ = {};
+
     WidgetAdapter(IWidget* iwidget, WidgetManager* parent, Layer* layer):
         WidgetManager({(double)iwidget->get_pos().x, (double)iwidget->get_pos().y},
                       {(double)iwidget->get_pos().x + iwidget->get_size().x,
@@ -47,7 +47,7 @@ public:
 
 int ButtonAdapterController (Button*, WidgetManager*);
 
-int ButtonAdapterPaint (Button*, QPainter*);
+int ButtonAdapterPaint (Button*);
 
 class ButtonAdapter: public Button
 {

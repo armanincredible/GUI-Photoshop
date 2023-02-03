@@ -2,10 +2,13 @@
 #define LAYER_H
 
 #include "vectors.h"
+#include <cstdio>
 
 class Canvas;
 
 class LayerObject;
+
+class WidgetManager;
 
 class Layer
 {
@@ -43,8 +46,8 @@ public:
         level_(lvl)
     {};
 
-    int paint_rectangle(LayerObject*, QPainter*);
-    int paint_rectangle_with_area(LayerObject*, QPainter*, Color);
+    int paint_rectangle(LayerObject*, WidgetManager*);
+    int paint_rectangle_with_area(LayerObject*, WidgetManager*, Color);
 };
 
 class Canvas

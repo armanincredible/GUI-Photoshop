@@ -1,5 +1,4 @@
 #include "button.h"
-#include "QPixmap"
 #include "widget.h"
 #include "error.h"
 //#include "texteditor.h"
@@ -84,22 +83,25 @@ int button_change_thickness (Button* my_button, WidgetManager* obj)
     END_(0);
 }
 
-int StandardButtonPaint (Button* button, QPainter* painter)
+int StandardButtonPaint (Button* button)
 {
     START_;
     if (button->is_colored())
     {
         Color color = button->get_color();
-        button->get_layer()->paint_rectangle_with_area(button, painter, color);
+        button->get_layer()->paint_rectangle_with_area(button, button->get_widget(), color);
         END_(0);
     }
-    button->get_layer()->paint_rectangle(button, painter);
+    button->get_layer()->paint_rectangle(button, button->get_widget());
     END_(0);
 }
 
-int ButtonPaintFromPicture (Button* button, QPainter* painter)
+int ButtonPaintFromPicture (Button* button)
 {
     START_;
+
+    button->get_layer()->paint_rectangle(button, button->get_widget());
+    
     if (button->get_image_path())
     {
         Point start {button->get_start_point()};
@@ -108,7 +110,31 @@ int ButtonPaintFromPicture (Button* button, QPainter* painter)
         int w = end.x - start.x;
         int h = end.y - start.y;
 
-        QRect target(start.x, start.y,
+        sf::Texture texture;
+        if (!texture.loadFromFile(button->get_image_path()))
+        {
+            sf::Text text;
+            text.setString(button->get_image_path());
+            text.setPosition(sf::Vector2f(start.x, start.y));
+
+            button->get_widget()->get_main_widget_()->draw(text);
+            //painter->drawText(target, button->get_image_path(), Qt::AlignHCenter | Qt::AlignVCenter);
+
+            PRINT_("Pixmap is emty because file image doesnt exit\n");
+            END_(0);
+        }
+        else
+        {
+            sf::Sprite sprite;
+            sprite.setTexture(texture);
+            sf::Vector2u size = texture.getSize();
+            sprite.setScale((float)w/size.x, (float)h/size.y);
+            sprite.setPosition(start.x, start.y);
+            button->get_widget()->get_main_widget_()->draw(sprite);
+        }
+        
+
+        /*QRect target(start.x, start.y,
                      w, h);
 
         QPixmap pix (button->get_image_path());
@@ -125,12 +151,12 @@ int ButtonPaintFromPicture (Button* button, QPainter* painter)
 
         painter->drawPixmap(target, pix, source);
         button->get_layer()->paint_rectangle(button, painter);
-        END_(0);
+        END_(0);*/
     }
     else
     {
         PRINT_("buttons image path is NULL\n");
-        button->get_layer()->paint_rectangle(button, painter);// add text with info abput file name
+        END_(0);
     }
 
     END_(-1);

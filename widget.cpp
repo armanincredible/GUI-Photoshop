@@ -6,21 +6,8 @@
 
 //WidgetManager* WidgetManager::cur_widget_painting_ = NULL;
 
-template < typename T >
-int find_element (T** objects, size_t objects_num, Point click)
-{
-    for (int i = 0; i < objects_num; i++)
-    {
-        if (objects[i]->is_my_area(click))
-        {
-            objects[i]->click_handler(click);
-            return i;
-        }
-    }
-    return -1;
-}
 
-int StandardWidgetPaint(WidgetManager* widget, QPainter* painter)
+int StandardWidgetPaint(WidgetManager* widget)
 {
     START_;
     /*
@@ -40,19 +27,19 @@ int StandardWidgetPaint(WidgetManager* widget, QPainter* painter)
         widget->paintCoordinateSystem(painter);
     }*/
 
-    widget->get_layer()->paint_rectangle(widget, painter);
+    widget->get_layer()->paint_rectangle(widget, widget);
 
     for (int i = 0; i < widget->get_widgets_num(); i++)
     {
         WidgetManager* cur_widget = (widget->get_widgets())[i];
-        cur_widget->paint_function_(cur_widget, painter);
+        cur_widget->paint_function_(cur_widget);
         //widgets_[i]->paint(painter);
     }
 
     for (int i = 0; i < widget->get_buttons_num(); i++)
     {
         Button* cur_button = (widget->get_buttons())[i];
-        cur_button->paint_function_(cur_button, painter);
+        cur_button->paint_function_(cur_button);
         //cur_button->paintCoordinateSystem(painter);
     }
     END_(0);
@@ -125,30 +112,28 @@ int WidgetManager::click_handler(Point click)
     END_(-1);
 }
 
-void WidgetManager::keyPressEvent(QKeyEvent *event)
+void WidgetManager::keyPressEvent(sf::Event *event)
 {
     START_;
     //PRINT_("%p is this widget", this);
     WidgetManager* active_widget = get_active_widget();
     if (active_widget && active_widget->is_need_in_key_events())
     {
-            active_widget->set_key_event(event);
+            active_widget->set_key_event(&event->key);
             active_widget->controller_(NULL, active_widget);
     }
     END_();
 }
 
-void WidgetManager::paintEvent(QPaintEvent *)
+void WidgetManager::paintEvent()
 {
     START_;
     WidgetManager* widget = NULL;
 
-    QPainter painter(this->cast_to());
-
     static bool have_background = false;
     if (!have_background)
     {
-        get_layer()->paint_rectangle_with_area(this, &painter, {1, 1, 1});
+        get_layer()->paint_rectangle_with_area(this, this, {1, 1, 1});
         have_background = true;
     }
 
@@ -170,7 +155,7 @@ void WidgetManager::paintEvent(QPaintEvent *)
         Tool* tool = get_active_tool_from_tool_manager();
         if (tool)
         {
-            tool->activity_(tool, &painter, get_click_coordinate());
+            tool->activity_(tool, this, get_click_coordinate());
         }
     }
     else
@@ -178,7 +163,7 @@ void WidgetManager::paintEvent(QPaintEvent *)
         /*
          * paint only active widget or all widgets if active is null
          */
-        widget->paint_function_(widget, &painter);
+        widget->paint_function_(widget);
     }
     END_();
 }
@@ -204,7 +189,6 @@ int WidgetManager::repaint_with_state(CurrentWork state)
     CurrentWork state_saved = get_work_state();
     set_work_state(state);
 
-    (get_main_widget_())->set_flag(Qt::WA_OpaquePaintEvent);
     (get_main_widget_())->repaint_widget();
 
     set_work_state(state_saved);
@@ -212,24 +196,24 @@ int WidgetManager::repaint_with_state(CurrentWork state)
     END_(0);
 }
 
-void WidgetManager::mouseReleaseEvent(QMouseEvent *event)
+void WidgetManager::mouseReleaseEvent(sf::Event *)
 {
     START_;
     is_mouse_pressed_ = false;
     END_();
 }
 
-void WidgetManager::mouseMoveEvent(QMouseEvent *event)
+void WidgetManager::mouseMoveEvent(sf::Event *event)
 {
     START_;
-    Point click = Point{double(event->x()), double(event->y())};
+    Point click = Point{double(event->mouseButton.x), double(event->mouseButton.y)};
     set_click_coordinate(click);
     is_mouse_pressed_ = true;
     click_handler(click);
     END_();
 }
 
-void WidgetManager::timerEvent(QTimerEvent *event)
+void WidgetManager::timerEvent(sf::Event *)
 {
     START_;
 
@@ -246,10 +230,10 @@ void WidgetManager::timerEvent(QTimerEvent *event)
     END_();
 }
 
-void WidgetManager::mousePressEvent(QMouseEvent *event)
+void WidgetManager::mousePressEvent(sf::Event *event)
 {
     START_;
-    Point click = Point{double(event->x()), double(event->y())};
+    Point click = Point{double(event->mouseButton.x), double(event->mouseButton.y)};
     set_click_coordinate(click);
     click_handler(click);
     END_();
@@ -283,7 +267,6 @@ int controller_paint (Button* button, WidgetManager* widget)
     {
         PRINT_("going to repaint, %p\n", widget);
 
-        (widget->get_main_widget_())->set_flag(Qt::WA_OpaquePaintEvent);
         (widget->get_main_widget_())->repaint_widget();
     }
 
@@ -302,7 +285,6 @@ int controller_only_buttons (Button* button, WidgetManager* widget)
     {
         PRINT_("going to repaint, %p\n", widget);
 
-        (widget->get_main_widget_())->set_flag(Qt::WA_OpaquePaintEvent);
         (widget->get_main_widget_())->repaint_widget();
     }
     END_(0);

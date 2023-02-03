@@ -3,7 +3,7 @@
 #include "window.h"
 #include "button.h"
 #include "tool.h"
-#include <QtWidgets>
+#include <SFML/Graphics.hpp>
 
 enum TypeWidget
 {
@@ -19,26 +19,25 @@ enum CurrentWork
     Nothing
 };
 
-class AbstrWidget : public LayerObject, public QMainWindow
+class AbstrWidget : public LayerObject, public sf::RenderWindow
 {
-    virtual void paintEvent(QPaintEvent *){};
-    virtual void mousePressEvent(QMouseEvent *){};
-    virtual void mouseReleaseEvent(QMouseEvent *){};
-    virtual void mouseMoveEvent(QMouseEvent *){};
-    virtual void keyPressEvent(QKeyEvent *){};
-    virtual void timerEvent(QTimerEvent *){};
+    virtual void paintEvent(){};
+    virtual void mousePressEvent(sf::Event *){};
+    virtual void mouseReleaseEvent(sf::Event *){};
+    virtual void mouseMoveEvent(sf::Event *){};
+    virtual void keyPressEvent(sf::Event *){};
+    virtual void timerEvent(sf::Event *){};
 public:
-    QPaintDevice* cast_to(){return (QPaintDevice*)this;}
-    void repaint_widget(){repaint();}
-    void resize_widget(int a, int b){resize(a, b);}
-    void show_widget(){show();}
-    void set_flag(Qt::WidgetAttribute attribute, bool on = true){
-        setAttribute(attribute, on);
+    void resize_widget(int a, int b)
+    {
+        sf::Vector2u vec(a, b); 
+        setSize(vec);
     }
+    void show_widget(){fprintf(stderr, "herere\n");paintEvent();fprintf(stderr, "herere\n");display();}
 
     AbstrWidget(Point a, Point b, Layer* layer):
-        QMainWindow(),
-        LayerObject(a, b, layer)
+        LayerObject(a, b, layer),
+        sf::RenderWindow()
     {}
 };
 
@@ -47,7 +46,7 @@ class WidgetManager : public AbstrWidget
 private:
     CurrentWork cur_work_state_ = CurrentWork::Nothing;
 
-    QKeyEvent* key_event_ = NULL;
+    sf::Event::KeyEvent* key_event_ = NULL;
     Point mouse_click_coordinate_ = {};
     bool is_mouse_pressed_ = 0;
 
@@ -72,16 +71,21 @@ private:
     int timerId_ = 0;
     bool is_has_timer_ = false;
 
-protected:
-    void keyPressEvent(QKeyEvent *) override;
-    void paintEvent(QPaintEvent *) override;
-    void mousePressEvent(QMouseEvent *) override;
-    void mouseReleaseEvent(QMouseEvent *) override;
-    void mouseMoveEvent(QMouseEvent *) override;
-    void timerEvent(QTimerEvent *) override;
 public:
+    void keyPressEvent(sf::Event *) override;
+    void paintEvent() override;
+    void mousePressEvent(sf::Event *) override;
+    void mouseReleaseEvent(sf::Event *) override;
+    void mouseMoveEvent(sf::Event *) override;
+    void timerEvent(sf::Event *) override;
+
+    int repaint_widget(){
+        get_main_widget_()->paintEvent();
+        return 0;
+    }
+
     int (*controller_) (Button*, WidgetManager*) = NULL;
-    int (*paint_function_)(WidgetManager*, QPainter*) = NULL;
+    int (*paint_function_)(WidgetManager*) = NULL;
     int (*timer_controller_) (WidgetManager*) = NULL;
     int (*last_activity_) (WidgetManager*) = NULL;
 
@@ -90,7 +94,7 @@ public:
         timer_controller_ = timer_controller;
     }
 
-    void set_timer(int millisec){timerId_ = startTimer(1000); is_has_timer_ = true;}
+    //void set_timer(int millisec){timerId_ = startTimer(1000); is_has_timer_ = true;}
 
     CurrentWork get_work_state(void){return get_main_widget_()->cur_work_state_;}
     void set_work_state(CurrentWork state){get_main_widget_()->cur_work_state_ = state;}
@@ -101,25 +105,22 @@ public:
     WidgetManager(Point start_point, Point end_point,
                   WidgetManager* parent_widget,
                   int (*controller) (Button*, WidgetManager*),
-                  int (*paint_func) (WidgetManager*, QPainter*),
+                  int (*paint_func) (WidgetManager*),
                   Layer* layer):
         parent_widget_(parent_widget),
         controller_(controller),
         AbstrWidget(start_point, end_point, layer),
         paint_function_(paint_func)
     {
-        if (parent_widget)
+        if (!parent_widget)
         {
-            set_flag(Qt::WA_TransparentForMouseEvents);
-            setEnabled(false);
-            //setVisible(true);
+            create(sf::VideoMode(end_point.x - start_point.x, end_point.y - start_point.y), "MainWindow");
         }
-
     }
 
     WidgetManager(Point start_point, Point end_point,
                   WidgetManager* parent_widget,
-                  int (*paint_func) (WidgetManager*, QPainter*),
+                  int (*paint_func) (WidgetManager*),
                   Layer* layer):
         WidgetManager(start_point, end_point, parent_widget, NULL, paint_func, layer)
     {}
@@ -136,7 +137,7 @@ public:
         }
         if (is_has_timer_)
         {
-            killTimer(timerId_);
+            //killTimer(timerId_);
         }
     }
 
@@ -232,8 +233,8 @@ public:
     Point get_click_coordinate (){return mouse_click_coordinate_;}
     void set_click_coordinate (Point click){mouse_click_coordinate_ = click;}
 
-    void set_key_event(QKeyEvent* event){key_event_ = event;}
-    QKeyEvent* get_key_event(void){return key_event_;}
+    void set_key_event(sf::Event::KeyEvent* event){key_event_ = event;}
+    sf::Event::KeyEvent* get_key_event(void){return key_event_;}
 
     int click_handler(Point);
 
@@ -242,6 +243,6 @@ public:
 };
 
 int controller_paint (Button*, WidgetManager*);
-int StandardWidgetPaint(WidgetManager*, QPainter*);
+int StandardWidgetPaint(WidgetManager*);
 
 #endif // WIDGET_H

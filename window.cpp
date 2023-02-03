@@ -1,9 +1,10 @@
 #include "window.h"
 #include "math.h"
+#include "widget.h"
 
-int CoordinateSystem::paintCoordinateSystem (QPainter* painter, bool with_area, Color color_line, Color color_area)
+int CoordinateSystem::paintCoordinateSystem (WidgetManager* widget, bool with_area, Color color_line, Color color_area)
 {
-    if (painter == NULL)
+    if (widget == NULL)
     {
         return -1;
     }
@@ -13,7 +14,14 @@ int CoordinateSystem::paintCoordinateSystem (QPainter* painter, bool with_area, 
     int height = heigh();
     int widtht = width();
 
-    QBrush brush_save  = painter->brush();
+    sf::RectangleShape rectangle(sf::Vector2f(widtht, height));
+    rectangle.setPosition(sf::Vector2f(x0, y0));
+
+    //rectangle.setFillColor(sf::Color(100, 250, 50));
+    rectangle.setOutlineColor(sf::Color(0, 0, 0));
+    rectangle.setOutlineThickness(10);
+
+    /*QBrush brush_save  = painter->brush();
 
     if (with_area == true)
     {
@@ -26,50 +34,11 @@ int CoordinateSystem::paintCoordinateSystem (QPainter* painter, bool with_area, 
 
     painter->drawRect(x0, y0, widtht, height);
 
-    painter->setBrush(brush_save);
+    painter->setBrush(brush_save);*/
+    widget->get_main_widget_()->draw(rectangle);
     return 0;
 }
 
-/*
-void Window_Clock::paintEvent(QPaintEvent *)
-{
-    static double alpha = 0;
-
-    QPainter painter(this);
-
-    Point origin_point = get_origin_point();
-    paintCoordinateSystem(&painter);
-
-    Vector vec = {{0, 0}, {get_radius() * sin(alpha), get_radius() * cos(alpha)}};
-    Vector vec2 = vec - vec * 2;
-    vec.paintVector(&painter, origin_point);
-    vec2.paintVector(&painter, origin_point);
-
-    alpha += 3.14/10000;
-    update();
-}
-
-
-void Window_Click::mousePressEvent(QMouseEvent *event)
-{
-    Point origin_point = get_origin_point();
-    mouse_click_.x = event->x() - origin_point.x;
-    mouse_click_.y = origin_point.y - event->y();
-    repaint();
-}
-
-
-void Window_Click::paintEvent(QPaintEvent *)
-{
-    QPainter painter(this);
-
-    Point origin_point = get_origin_point();
-    paintCoordinateSystem(&painter);
-
-    Vector vec = {{0, 0}, {mouse_click_.x, mouse_click_.y}};
-
-    vec.paintVector(&painter, origin_point);
-}*/
 
 int CoordinateSystem::is_my_area(Point click) const
 {

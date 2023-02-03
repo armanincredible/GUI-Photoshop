@@ -5,6 +5,8 @@
 #include <cstdio>
 #include <cstdlib>
 
+class WidgetManager;
+
 class Tool
 {
 private:
@@ -14,9 +16,9 @@ private:
     Color color_{};
     int thickness_ = 4;
 public:
-    int (*activity_)(Tool*, QPainter*, Point);
+    int (*activity_)(Tool*, WidgetManager*, Point);
 
-    Tool(int (*activity) (Tool*, QPainter*, Point)):
+    Tool(int (*activity) (Tool*, WidgetManager*, Point)):
         activity_(activity)
     {};
 
@@ -77,8 +79,9 @@ public:
     }
 };
 
-int paint_dot (Tool*, QPainter*, Point);
-int paint_line (Tool*, QPainter*, Point);
-int clear_dot (Tool*, QPainter*, Point);
+
+int paint_dot (Tool*, WidgetManager*, Point);
+int paint_line (Tool*, WidgetManager*, Point);
+int clear_dot (Tool*, WidgetManager*, Point);
 
 #endif // TOOL_H

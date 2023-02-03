@@ -3,7 +3,6 @@
 
 #include "../plugin.h"
 //#include <QPixmap>
-#include "QImage"
 
 #include <iostream>
 #include "string.h"
@@ -172,7 +171,7 @@ public:
         fprintf (stderr, "in draw\n");
         if (image_path_)
         {
-            fprintf (stderr, "in draw image\n");
+            /*fprintf (stderr, "in draw image\n");
             QImage image(image_path_);
             if (image.isNull())
             {
@@ -199,7 +198,7 @@ public:
                 //fprintf (stderr, "end\n");
             }
             //memcpy(screen, image.bits(), width * 3 * height);
-            fprintf (stderr, "in draw2\n");
+            fprintf (stderr, "in draw2\n");*/
         }
         else
         {

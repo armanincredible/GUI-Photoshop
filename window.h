@@ -1,10 +1,7 @@
 #ifndef WINDOW_H
 #define WINDOW_H
 
-#include "QPaintEvent"
-#include "vectors.h"
-#include "QPainter"
-#include "QWidget"
+#include <SFML/Graphics.hpp>
 #include "math.h"
 #include "layer.h"
 
@@ -54,7 +51,7 @@ public:
         return end_point_;
     }
     int is_my_area(Point click) const;
-    int paintCoordinateSystem(QPainter*, bool = false, Color = {}, Color = {});
+    int paintCoordinateSystem(WidgetManager*, bool = false, Color = {}, Color = {});
 };
 
 class LayerObject : public CoordinateSystem
@@ -70,50 +67,6 @@ public:
 
     int set_layer(Layer* layer){layer_ = layer; return layer->add_object(this);}
     Layer* get_layer(void){return layer_;}
-};
-
-
-class Window : public QWidget
-{
-    Q_OBJECT
-
-protected:
-    virtual void paintEvent(QPaintEvent *){};
-
-private:
-    Point start_point_ = {};
-    Point end_point_ = {};
-    Point origin_point_ = {};
-
-public:
-    Window(Point start, Point end, Point origin):
-        start_point_(start),
-        end_point_(end),
-        origin_point_(origin)
-    {
-    }
-    Window(){}
-    ~Window(){}
-
-    int heigh() const
-    {
-        return end_point_.y - start_point_.y;
-    }
-
-    int width() const
-    {
-        return end_point_.x - start_point_.x;
-    }
-
-    Point get_origin_point() const
-    {
-        return origin_point_;
-    }
-    Point get_start_point()const
-    {
-        return start_point_;
-    }
-    int paintCoordinateSystem(QPainter*);
 };
 
 /*

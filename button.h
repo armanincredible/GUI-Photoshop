@@ -14,11 +14,11 @@ class AbstractButton : public LayerObject
 {
 private:
     const char* name_ = NULL;
-    Vector color_ = {};
+    Color color_ = {};
     FormType form_type_ = rectangle;
 
 public:
-    AbstractButton(char* name, Vector color, Point a, Point b,  FormType form_type, Layer* layer):
+    AbstractButton(char* name, Color color, Point a, Point b,  FormType form_type, Layer* layer):
         LayerObject(a, b, layer),
         name_(name),
         color_(color),
@@ -46,17 +46,17 @@ private:
     bool is_colored_ = false;
 
 public:
-    Button(char* name, Vector color, Point start, Point end, int (*response)(Button*, WidgetManager*), Layer* layer):
+    Button(char* name, Color color, Point start, Point end, int (*response)(Button*, WidgetManager*), Layer* layer):
         AbstractButton(name, color, start, end, FormType{rectangle}, layer)
     {
         response_ = response;
     }
-    Button(char* name, Vector color, Point start, Point end,  FormType form_type, Layer* layer):
+    Button(char* name, Color color, Point start, Point end,  FormType form_type, Layer* layer):
         AbstractButton(name, color, start, end, FormType{rectangle}, layer)
     {}
     Button(Point start, Point end, Tool* tool,
            int (*response)(Button*, WidgetManager*),
-           int (*paint_function)(Button*, QPainter*),
+           int (*paint_function)(Button*),
            Layer* layer):
         AbstractButton(start, end, layer),
         my_tool_(tool),
@@ -65,12 +65,12 @@ public:
     {}
     Button(Point start, Point end,
            int (*response)(Button*, WidgetManager*),
-           int (*paint_function)(Button*, QPainter*),
+           int (*paint_function)(Button*),
            Layer* layer):
         Button(start, end, nullptr, response, paint_function, layer)
     {}
 
-    int (*paint_function_)(Button*, QPainter*) = NULL;
+    int (*paint_function_)(Button*) = NULL;
     int (*response_)(Button*, WidgetManager*);
 
     void set_tool(Tool* tool){my_tool_ = tool;}
@@ -91,7 +91,7 @@ int button_with_instrument (Button*, WidgetManager*);
 int button_change_color_tool (Button*, WidgetManager*);
 int button_change_thickness (Button*, WidgetManager*);
 
-int StandardButtonPaint (Button*, QPainter*);
-int ButtonPaintFromPicture (Button*, QPainter*);
+int StandardButtonPaint (Button*);
+int ButtonPaintFromPicture (Button*);
 
 #endif // BUTTON_H

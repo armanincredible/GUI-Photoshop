@@ -34,10 +34,10 @@ int ButtonAdapterController (Button* button, WidgetManager* widget)
     END_(0);
 }
 
-int ButtonAdapterPaint(Button* button, QPainter* painter)
+int ButtonAdapterPaint(Button* button)
 {
     START_;
-
+/*
     ButtonAdapter* button_adapter = (ButtonAdapter*) button;
     int size_x = button_adapter->ibutton_->get_size().x;
     int size_y = button_adapter->ibutton_->get_size().y;
@@ -57,11 +57,11 @@ int ButtonAdapterPaint(Button* button, QPainter* painter)
                                                                  size_y);
 
     painter->drawImage(target, image, src_rect);
-
+*/
     END_(0);
 }
 
-int WidgetAdapterPaint(WidgetManager* widget, QPainter* painter)
+int WidgetAdapterPaint(WidgetManager* widget)
 {
     START_;
 
@@ -71,7 +71,7 @@ int WidgetAdapterPaint(WidgetManager* widget, QPainter* painter)
 
     int x0 = widget_adapter->iwidget_->get_pos().x;
     int y0 = widget_adapter->iwidget_->get_pos().y;
-
+/*
     QRect target(x0, y0, size_x, size_y);
     //QRect target(0, 0, 1920, 1080);
     uchar* collor_buffer = widget_adapter->src_.bits();
@@ -83,7 +83,7 @@ int WidgetAdapterPaint(WidgetManager* widget, QPainter* painter)
     pmap.convertFromImage(widget_adapter->src_);
 
     painter->drawPixmap(target, pmap, target);
-
+*/
     END_(0);
 }
 
@@ -98,13 +98,12 @@ int controller_adapter_widget (Button* button, WidgetManager* widget)
     {
         //Point click = widget->get_main_widget_()->get_click_coordinate();
 
-        (widget->get_main_widget_())->set_flag(Qt::WA_OpaquePaintEvent);
         (widget->get_main_widget_())->repaint_widget();
     }
     END_(0);
 }
 
-int ToolActivityAdapter(Tool* tool, QPainter* painter, Point p)
+int ToolActivityAdapter(Tool* tool, WidgetManager* painter, Point p)
 {
     START_;
 
@@ -118,7 +117,7 @@ int ToolActivityAdapter(Tool* tool, QPainter* painter, Point p)
 
     int x0 = start.x;
     int y0 = start.y;
-
+/*
     QRect target(x0, y0, size_x, size_y);
     QRect src_rect(0, 0, size_x, size_y);
 
@@ -152,6 +151,6 @@ int ToolActivityAdapter(Tool* tool, QPainter* painter, Point p)
 
     painter->drawImage(target, image_mini, src_rect);
     //painter->drawImage(src_rect, image_one_new, src_rect);
-
+*/
     END_(0);
 }

@@ -1,15 +1,16 @@
 ﻿#include "texteditor.h"
 #include "error.h"
 #include <stdlib.h>
+#include <string.h>
 
-int StandardTextEditorPaint(WidgetManager* widget, QPainter* painter)
+int StandardTextEditorPaint(WidgetManager* widget)
 {
     START_;
 
-    if (widget && painter)
+    if (widget)
     {
         TextEditor* text_editor = (TextEditor*) widget;
-        StandardWidgetPaint(text_editor, painter);
+        StandardWidgetPaint(text_editor);
 
         Tool* tool = widget->get_active_tool_from_tool_manager();
         if (tool && (widget->get_work_state() == CurrentWork::ChangeActiveTool))
@@ -48,24 +49,19 @@ int StandardTextEditorPaint(WidgetManager* widget, QPainter* painter)
         int height = text_editor->CoordinateSystem::heigh();
         int widtht = text_editor->CoordinateSystem::width();
 
-        widget->get_layer()->paint_rectangle_with_area(widget, painter, {1, 1, 1});
+        widget->get_layer()->paint_rectangle_with_area(widget, widget, {1, 1, 1});
 
-        painter->drawText(x0, y0, widtht, height, Qt::AlignCenter, text_editor->get_data());
+        //painter->drawText(x0, y0, widtht, height, Qt::AlignCenter, text_editor->get_data());
 
-        QKeyEvent* key_event = text_editor->get_key_event();
         if ((widget->get_work_state() == CurrentWork::TimerReaction) && (widget->get_active_widget() == text_editor))
         {
-            /*if (key_event && (key_event->key() == 0x01000004))
-            {
-                END_(0);
-            }*/
             static bool line_need = true;
 
             int y0 = text_editor->get_start_point().y;
             int x1 = text_editor->get_end_point().x - 3;
             int y1 = text_editor->get_end_point().y;
 
-            QPen paintpen;
+            /*QPen paintpen;
             QPen savedpaintpen = painter->pen();
             if (!line_need)
             {
@@ -80,7 +76,7 @@ int StandardTextEditorPaint(WidgetManager* widget, QPainter* painter)
             painter->setPen(paintpen);
             painter->drawLine(x1, y0 + 3,
                         x1, y1 - 3);
-            painter->setPen(savedpaintpen);
+            painter->setPen(savedpaintpen);*/
         }
 
         END_(0);
@@ -104,7 +100,6 @@ int TextEditor::delete_data()
         data_[--cur_symb_] = ' ';
     }
 
-    get_main_widget_()->set_flag(Qt::WA_OpaquePaintEvent);
     get_main_widget_()->repaint_widget();
 
     END_(0);
@@ -158,7 +153,6 @@ int TextEditor::set_data(const int symb)
     data_[cur_symb_] = symb;
     cur_symb_++;
 
-    get_main_widget_()->set_flag(Qt::WA_OpaquePaintEvent);
     get_main_widget_()->repaint_widget();
 
     END_(0);
@@ -179,18 +173,18 @@ int controller_text_editor(Button* button, WidgetManager* widget)
         TextEditor* text_editor = (TextEditor*) widget;
         Tool* tool = widget->get_active_tool_from_tool_manager();
 
-        QKeyEvent* key_event = text_editor->get_key_event();
+        sf::Event::KeyEvent* key_event = text_editor->get_key_event();
 
         if (!key_event)
         {
             END_(0);
         }
 
-        if (key_event->key() == Qt::Key_Backspace)
+        if (key_event->code == sf::Keyboard::Key::BackSpace)
         {
             text_editor->delete_data();
         }
-        else if (key_event->key() == 0x01000004)
+        else if (key_event->code == sf::Keyboard::Key::Enter)
         {
             if (tool)
             {
@@ -222,14 +216,13 @@ int controller_text_editor(Button* button, WidgetManager* widget)
                 }
             }
 
-            (text_editor->get_main_widget_())->set_flag(Qt::WA_OpaquePaintEvent);
             (text_editor->get_main_widget_())->repaint_widget();
 
             text_editor->set_active_widget(NULL);
         }
         else
         {
-            text_editor->set_data(*((char*)key_event->text().data()));
+            text_editor->set_data(key_event->code + 'a');
         }
 
         text_editor->set_key_event(NULL);
@@ -243,7 +236,6 @@ int timer_controller_text_editor(WidgetManager* widget)
     static bool paint_line = true;
     if (widget == widget->get_active_widget())
     {
-        (widget->get_main_widget_())->set_flag(Qt::WA_OpaquePaintEvent);
         (widget->get_main_widget_())->repaint_widget();
     }
     END_(0);
@@ -252,7 +244,6 @@ int timer_controller_text_editor(WidgetManager* widget)
 int last_activity_text_editor(WidgetManager* widget)
 {
     START_;
-    (widget->get_main_widget_())->set_flag(Qt::WA_OpaquePaintEvent);
     (widget->get_main_widget_())->repaint_widget();
     END_(0);
 }

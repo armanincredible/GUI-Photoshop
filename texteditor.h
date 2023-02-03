@@ -36,7 +36,7 @@ public:
     TextEditor(Point start_point, Point end_point,
                WidgetManager* parent_widget,
                int (*controller) (Button*, WidgetManager*),
-               int (*paint_func) (WidgetManager*, QPainter*),
+               int (*paint_func) (WidgetManager*),
                Layer* layer,
                InfoType info_type):
         WidgetManager(start_point, end_point, parent_widget, controller, paint_func, layer),
@@ -72,7 +72,7 @@ public:
     void set_control_variable(int* var){conrtol_variable_ = var;}
 };
 
-int StandardTextEditorPaint(WidgetManager*, QPainter*);
+int StandardTextEditorPaint(WidgetManager*);
 int controller_text_editor(Button*, WidgetManager*);
 int timer_controller_text_editor(WidgetManager* widget);
 int last_activity_text_editor(WidgetManager* widget);
