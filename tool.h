@@ -5,7 +5,7 @@
 #include <cstdio>
 #include <cstdlib>
 
-class WidgetManager;
+class LayerObject;
 
 class Tool
 {
@@ -16,9 +16,9 @@ private:
     Color color_{};
     int thickness_ = 4;
 public:
-    int (*activity_)(Tool*, WidgetManager*, Point);
+    int (*activity_)(Tool*, LayerObject*, Point);
 
-    Tool(int (*activity) (Tool*, WidgetManager*, Point)):
+    Tool(int (*activity) (Tool*, LayerObject*, Point)):
         activity_(activity)
     {};
 
@@ -80,8 +80,8 @@ public:
 };
 
 
-int paint_dot (Tool*, WidgetManager*, Point);
-int paint_line (Tool*, WidgetManager*, Point);
-int clear_dot (Tool*, WidgetManager*, Point);
+int paint_dot (Tool*, LayerObject*, Point);
+int paint_line (Tool*, LayerObject*, Point);
+int clear_dot (Tool*, LayerObject*, Point);
 
 #endif // TOOL_H

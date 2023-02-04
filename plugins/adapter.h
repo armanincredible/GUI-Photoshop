@@ -14,7 +14,7 @@
 int WidgetAdapterPaint(WidgetManager* widget);
 WidgetManager* from_iwidget_to_widget(IWidget* widget);
 int controller_adapter_widget (Button* button, WidgetManager* widget);
-int ToolActivityAdapter(Tool* tool, WidgetManager* painter, Point p);
+int ToolActivityAdapter(Tool* tool, LayerObject* painter, Point p);
 
 class ToolAdapter: public Tool
 {

@@ -46,18 +46,24 @@ public:
         level_(lvl)
     {};
 
-    int paint_rectangle(LayerObject*, WidgetManager*);
-    int paint_rectangle_with_area(LayerObject*, WidgetManager*, Color);
+    int paint_rectangle(LayerObject*);
+    int paint_rectangle_with_area(LayerObject*, Color, bool = true, Color = {0, 0, 0});
+    int paint_dot(LayerObject*, Point, int, Color = {0, 0, 0});
+    int paint_line(LayerObject*, Point, Point, int, Color = {0, 0, 0});
 };
 
 class Canvas
 {
 private:
+    WidgetManager* my_render_widget_ = NULL;
     Layer** layers_ = NULL;
     size_t layer_num_ = 0;
     Layer* active_layer_ = NULL;
 public:
     //Canvas();
+    WidgetManager* get_render_widget(){return my_render_widget_;}
+    void set_render_widget(WidgetManager* widget){my_render_widget_ = widget;}
+
     int add_layer (Layer* layer)
     {
         if (!layer_num_ && layers_)

@@ -89,10 +89,10 @@ int StandardButtonPaint (Button* button)
     if (button->is_colored())
     {
         Color color = button->get_color();
-        button->get_layer()->paint_rectangle_with_area(button, button->get_widget(), color);
+        button->get_layer()->paint_rectangle_with_area(button, color);
         END_(0);
     }
-    button->get_layer()->paint_rectangle(button, button->get_widget());
+    button->get_layer()->paint_rectangle(button);
     END_(0);
 }
 
@@ -100,7 +100,7 @@ int ButtonPaintFromPicture (Button* button)
 {
     START_;
 
-    button->get_layer()->paint_rectangle(button, button->get_widget());
+    button->get_layer()->paint_rectangle(button);
     
     if (button->get_image_path())
     {
@@ -113,9 +113,21 @@ int ButtonPaintFromPicture (Button* button)
         sf::Texture texture;
         if (!texture.loadFromFile(button->get_image_path()))
         {
+            sf::Font font;
             sf::Text text;
+            font.loadFromFile("/usr/share/fonts/fonts-go/Go-Bold.ttf");
+            text.setCharacterSize(h);
+            text.setFont(font);
+            text.setFillColor(sf::Color::Black);
             text.setString(button->get_image_path());
-            text.setPosition(sf::Vector2f(start.x, start.y));
+
+            sf::FloatRect textRect = text.getLocalBounds();
+            text.setOrigin(textRect.left + textRect.width/2.0f,
+                        textRect.top  + textRect.height/2.0f);
+            text.setPosition(sf::Vector2f(start.x + w/2.0f,start.y + h/2.0f));
+
+            text.setLineSpacing(0);
+            text.setScale((float)w / (text.getLocalBounds().width), (float)h / (text.getLocalBounds().height));
 
             button->get_widget()->get_main_widget_()->draw(text);
             //painter->drawText(target, button->get_image_path(), Qt::AlignHCenter | Qt::AlignVCenter);

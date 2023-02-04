@@ -103,7 +103,7 @@ int controller_adapter_widget (Button* button, WidgetManager* widget)
     END_(0);
 }
 
-int ToolActivityAdapter(Tool* tool, WidgetManager* painter, Point p)
+int ToolActivityAdapter(Tool* tool, LayerObject* painter, Point p)
 {
     START_;
 

@@ -49,9 +49,26 @@ int StandardTextEditorPaint(WidgetManager* widget)
         int height = text_editor->CoordinateSystem::heigh();
         int widtht = text_editor->CoordinateSystem::width();
 
-        widget->get_layer()->paint_rectangle_with_area(widget, widget, {1, 1, 1});
+        widget->get_layer()->paint_rectangle_with_area(widget, {1, 1, 1});
 
         //painter->drawText(x0, y0, widtht, height, Qt::AlignCenter, text_editor->get_data());
+
+        sf::Font font;
+        sf::Text text;
+        font.loadFromFile("/usr/share/fonts/fonts-go/Go-Bold.ttf");
+        text.setCharacterSize(height);
+        text.setFont(font);
+        text.setFillColor(sf::Color::Black);
+        text.setString(text_editor->get_data());
+        text.setLineSpacing(0);
+
+        sf::FloatRect textRect = text.getLocalBounds();
+        text.setOrigin(textRect.left + textRect.width/2.0f,
+                    textRect.top  + textRect.height/2.0f);
+        text.setPosition(sf::Vector2f(x0 + widtht/2.0f, y0 + height/2.0f));
+
+
+        widget->get_main_widget_()->draw(text);
 
         if ((widget->get_work_state() == CurrentWork::TimerReaction) && (widget->get_active_widget() == text_editor))
         {
@@ -61,22 +78,7 @@ int StandardTextEditorPaint(WidgetManager* widget)
             int x1 = text_editor->get_end_point().x - 3;
             int y1 = text_editor->get_end_point().y;
 
-            /*QPen paintpen;
-            QPen savedpaintpen = painter->pen();
-            if (!line_need)
-            {
-                paintpen.setColor(QColor(255, 255, 255));
-                line_need = true;
-            }
-            else
-            {
-                line_need = false;
-            }
-            paintpen.setWidth(2);
-            painter->setPen(paintpen);
-            painter->drawLine(x1, y0 + 3,
-                        x1, y1 - 3);
-            painter->setPen(savedpaintpen);*/
+            widget->get_layer()->paint_line(widget, {(double)x1, (double)y0}, {(double)x1, (double)y1}, 1);
         }
 
         END_(0);
@@ -222,7 +224,12 @@ int controller_text_editor(Button* button, WidgetManager* widget)
         }
         else
         {
-            text_editor->set_data(key_event->code + 'a');
+            //fprintf (stderr, "know i add %c", key_event->code + 'a');
+            if (key_event->code >= sf::Keyboard::Num0 && key_event->code <= sf::Keyboard::Num9)
+            {
+                text_editor->set_data(key_event->code - sf::Keyboard::Num0 + '0');
+            }
+            //text_editor->set_data(key_event->code);
         }
 
         text_editor->set_key_event(NULL);

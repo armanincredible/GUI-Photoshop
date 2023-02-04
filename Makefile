@@ -15,4 +15,4 @@ all: lib
 
 lib:
 	$(CC) -c -fPIC $(CFLAGS) $(C_SRCS)
-	$(CC) $(C_OBJS) -lstdc++ $(SHARED_LIB) -o do
+	$(CC) $(C_OBJS) -lstdc++ $(SHARED_LIB) -lm -o do

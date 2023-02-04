@@ -54,8 +54,12 @@ int make_photoshop(int argc, char *argv[])
     Canvas canvas;
     Layer null_lvl_layer(0);
     Layer first_lvl_layer(1);
+    canvas.add_layer(&null_lvl_layer);
+    canvas.add_layer(&first_lvl_layer);
 
     WidgetManager main_widget ({0, 0, 0}, {1920, 1080}, NULL, StandardWidgetPaint, &null_lvl_layer);
+    canvas.set_render_widget(&main_widget);
+
     WidgetManager paint_widget ({200, 110, 0}, {1700, 600}, &main_widget, controller_paint, StandardWidgetPaint, &first_lvl_layer);
     WidgetManager palette_widget ({200, 800}, {1000, 1000}, &main_widget, controller_paint, StandardWidgetPaint, &first_lvl_layer);
     WidgetManager tool_properties ({200, 50}, {1700, 110}, &main_widget, controller_paint, StandardWidgetPaint, &first_lvl_layer);
@@ -145,16 +149,16 @@ int make_photoshop(int argc, char *argv[])
     main_widget.resize_widget(1920, 1080);
     main_widget.setFramerateLimit(144u);
 
+    bool flag = false;
     while (main_widget.isOpen())
     {
-        bool flag = false;
         sf::Event event;
+
         while (main_widget.pollEvent(event)) 
         {
             if (event.type == sf::Event::Closed)
             {
                 main_widget.close();
-                main_widget.paintEvent();
             }
             if (event.type == sf::Event::KeyPressed)
             {
@@ -177,12 +181,14 @@ int make_photoshop(int argc, char *argv[])
             //main_widget.paintEvent();
         }
 
-        //main_widget.clear();
-        //main_widget.draw(shape);
-        //main_widget.paintEvent();
-        flag = true;
+        /*if (!flag)
+        {
+            main_widget.clear();
+            main_widget.paintEvent();
+            flag = true;
+        }*/
 
-        main_widget.show_widget();
+        //main_widget.show_widget();
         main_widget.display();
     }
 

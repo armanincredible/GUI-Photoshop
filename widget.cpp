@@ -27,7 +27,7 @@ int StandardWidgetPaint(WidgetManager* widget)
         widget->paintCoordinateSystem(painter);
     }*/
 
-    widget->get_layer()->paint_rectangle(widget, widget);
+    widget->get_layer()->paint_rectangle(widget);
 
     for (int i = 0; i < widget->get_widgets_num(); i++)
     {
@@ -133,7 +133,7 @@ void WidgetManager::paintEvent()
     static bool have_background = false;
     if (!have_background)
     {
-        get_layer()->paint_rectangle_with_area(this, this, {1, 1, 1});
+        get_layer()->paint_rectangle_with_area(this, {1, 1, 1});
         have_background = true;
     }
 
