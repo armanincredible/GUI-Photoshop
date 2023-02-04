@@ -18,23 +18,15 @@ int CoordinateSystem::paintCoordinateSystem (WidgetManager* widget, bool with_ar
     rectangle.setPosition(sf::Vector2f(x0, y0));
 
     //rectangle.setFillColor(sf::Color(100, 250, 50));
-    rectangle.setOutlineColor(sf::Color(0, 0, 0));
-    rectangle.setOutlineThickness(10);
-
-    /*QBrush brush_save  = painter->brush();
+    rectangle.setOutlineColor(sf::Color(color_line.r * 255, color_line.g * 255, color_line.b * 255));
+    rectangle.setFillColor(sf::Color::Transparent);
+    rectangle.setOutlineThickness(1);
 
     if (with_area == true)
     {
-        QBrush brush(QColor(color_area.r * 255, color_area.g * 255, color_area.b * 255));
-        painter->setBrush(brush);
+        rectangle.setFillColor(sf::Color(color_area.r * 255, color_area.g * 255, color_area.b * 255));
     }
 
-    QPen paintpen(QColor(color_line.r * 255, color_line.g * 255, color_line.b * 255));
-    painter->setPen(paintpen);
-
-    painter->drawRect(x0, y0, widtht, height);
-
-    painter->setBrush(brush_save);*/
     widget->get_main_widget_()->draw(rectangle);
     return 0;
 }

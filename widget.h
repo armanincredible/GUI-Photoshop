@@ -33,7 +33,7 @@ public:
         sf::Vector2u vec(a, b); 
         setSize(vec);
     }
-    void show_widget(){fprintf(stderr, "herere\n");paintEvent();fprintf(stderr, "herere\n");display();}
+    void show_widget(){display();}
 
     AbstrWidget(Point a, Point b, Layer* layer):
         LayerObject(a, b, layer),

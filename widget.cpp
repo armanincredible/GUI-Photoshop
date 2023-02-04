@@ -206,10 +206,12 @@ void WidgetManager::mouseReleaseEvent(sf::Event *)
 void WidgetManager::mouseMoveEvent(sf::Event *event)
 {
     START_;
-    Point click = Point{double(event->mouseButton.x), double(event->mouseButton.y)};
+    Point click = Point{double(event->mouseMove.x), double(event->mouseMove.y)};
     set_click_coordinate(click);
-    is_mouse_pressed_ = true;
-    click_handler(click);
+    if (is_mouse_pressed_)
+    {
+        click_handler(click);
+    }
     END_();
 }
 
@@ -233,6 +235,7 @@ void WidgetManager::timerEvent(sf::Event *)
 void WidgetManager::mousePressEvent(sf::Event *event)
 {
     START_;
+    is_mouse_pressed_ = true;
     Point click = Point{double(event->mouseButton.x), double(event->mouseButton.y)};
     set_click_coordinate(click);
     click_handler(click);

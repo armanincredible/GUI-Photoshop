@@ -147,28 +147,41 @@ int make_photoshop(int argc, char *argv[])
 
     while (main_widget.isOpen())
     {
+        bool flag = false;
         sf::Event event;
-        while (main_widget.pollEvent(event))
+        while (main_widget.pollEvent(event)) 
         {
             if (event.type == sf::Event::Closed)
             {
                 main_widget.close();
+                main_widget.paintEvent();
             }
             if (event.type == sf::Event::KeyPressed)
             {
                 main_widget.keyPressEvent(&event);
+                main_widget.paintEvent();
             }
             if (event.type == sf::Event::MouseButtonPressed)
             {
                 main_widget.mousePressEvent(&event);
+                main_widget.paintEvent();
             }
+            /*if (event.type == sf::Event::MouseMoved)
+            {
+                main_widget.mouseMoveEvent(&event);
+            }
+            if (event.type == sf::Event::MouseButtonReleased)
+            {
+                main_widget.mouseReleaseEvent(&event);
+            }*/
+            //main_widget.paintEvent();
         }
-
-        sf::CircleShape shape(100.f);
-        shape.setFillColor(sf::Color::Green);
 
         //main_widget.clear();
         //main_widget.draw(shape);
+        //main_widget.paintEvent();
+        flag = true;
+
         main_widget.show_widget();
         main_widget.display();
     }
