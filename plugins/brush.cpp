@@ -8,7 +8,7 @@ IPlugin* get_plugin()
     my_plugin = plugin;
     BrushButton* button = new BrushButton({800, 800}, {200, 200});
     BrushTool* tool = new BrushTool();
-    //button->image_path_ = "/home/narman/qt_projects/GUI/stream/pencil.png";
+    button->image_path_ = "/home/narman/qt_projects/GUI/stream/pencil.png";
     plugin->set_tool_button(button);
     plugin->set_props(NULL);
     plugin->set_tool(tool);

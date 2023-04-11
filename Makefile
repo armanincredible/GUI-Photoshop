@@ -3,6 +3,8 @@ CC ?= $(CROSS_COMPILE)g++
 
 C_SRCS := $(sort $(wildcard *.cpp))
 C_OBJS := ${C_SRCS:.cpp=.o}
+C_SRCS += plugins/adapter.cpp
+C_OBJS += adapter.o
 OBJS := $(C_OBJS)
 
 INCLUDE_DIRS := #/home/narman/Qt/5.15.2/gcc_64/include/QtGui /home/narman/Qt/5.15.2/gcc_64/include
@@ -16,3 +18,6 @@ all: lib
 lib:
 	$(CC) -c -fPIC $(CFLAGS) $(C_SRCS)
 	$(CC) $(C_OBJS) -lstdc++ $(SHARED_LIB) -lm -o do
+
+clean:
+	rm *.o

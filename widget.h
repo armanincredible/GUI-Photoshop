@@ -26,7 +26,7 @@ class AbstrWidget : public LayerObject, public sf::RenderWindow
     virtual void mouseReleaseEvent(sf::Event *){};
     virtual void mouseMoveEvent(sf::Event *){};
     virtual void keyPressEvent(sf::Event *){};
-    virtual void timerEvent(sf::Event *){};
+    virtual void timerEvent(sf::Time){};
 public:
     void resize_widget(int a, int b)
     {
@@ -55,6 +55,9 @@ private:
     WidgetManager** widgets_ = NULL;
     size_t widgets_num_ = 0;
 
+    WidgetManager** widgets_with_timer_ = NULL;
+    size_t widgets_with_timer_num_ = 0;
+
     ToolManager* tool_manager_ = NULL;
     size_t tools_num_ = 0;
 
@@ -68,7 +71,8 @@ private:
     WidgetManager* active_widget_ = NULL;
     ToolManager* active_tool_manager_ = NULL;
 
-    int timerId_ = 0;
+    int timer_ = 0;
+    int passed_time_ = 0;
     bool is_has_timer_ = false;
 
 public:
@@ -77,7 +81,7 @@ public:
     void mousePressEvent(sf::Event *) override;
     void mouseReleaseEvent(sf::Event *) override;
     void mouseMoveEvent(sf::Event *) override;
-    void timerEvent(sf::Event *) override;
+    void timerEvent(sf::Time) override;
 
     int repaint_widget(){
         get_main_widget_()->paintEvent();
@@ -94,7 +98,11 @@ public:
         timer_controller_ = timer_controller;
     }
 
-    //void set_timer(int millisec){timerId_ = startTimer(1000); is_has_timer_ = true;}
+    void set_timer(int millisec){timer_ = millisec;}
+    int get_timer(){return timer_;}
+    void set_passed_time(int passed_time){passed_time_ = passed_time;}
+    void add_passed_time(int passed_time){passed_time_ += passed_time;}
+    int get_passed_time(){return passed_time_;}
 
     CurrentWork get_work_state(void){return get_main_widget_()->cur_work_state_;}
     void set_work_state(CurrentWork state){get_main_widget_()->cur_work_state_ = state;}
@@ -141,6 +149,24 @@ public:
         }
     }
 
+    int add_widget_on_timer(WidgetManager* widget)
+    {
+        if (!widgets_with_timer_num_ && widgets_with_timer_)
+        {
+            printf ("ERROR %d\n", __LINE__);
+        }
+        widgets_with_timer_num_++;
+        widgets_with_timer_ = (WidgetManager**) realloc (widgets_with_timer_, widgets_with_timer_num_ * sizeof(WidgetManager*));
+        if (widgets_with_timer_ == NULL)
+        {
+            return -1;
+        }
+        widgets_with_timer_[widgets_with_timer_num_ - 1] = widget;
+        return 0;
+    }
+    size_t get_widgets_with_timer_num (){return widgets_with_timer_num_;}
+    WidgetManager** get_widgets_with_timer (){return widgets_with_timer_;}
+
     int add_widget (WidgetManager* widget)
     {
         if (!widgets_num_ && widgets_)
@@ -167,6 +193,10 @@ public:
         if (!buttons_num_ && buttons_)
         {
             printf ("ERROR %d\n", __LINE__);
+        }
+        if (!button)
+        {
+            return -1;
         }
         buttons_num_++;
         buttons_ = (Button**) realloc (buttons_, buttons_num_ * sizeof(Button*));

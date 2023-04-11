@@ -113,57 +113,15 @@ int ButtonPaintFromPicture (Button* button)
         sf::Texture texture;
         if (!texture.loadFromFile(button->get_image_path()))
         {
-            sf::Font font;
-            sf::Text text;
-            font.loadFromFile("/usr/share/fonts/fonts-go/Go-Bold.ttf");
-            text.setCharacterSize(h);
-            text.setFont(font);
-            text.setFillColor(sf::Color::Black);
-            text.setString(button->get_image_path());
-
-            sf::FloatRect textRect = text.getLocalBounds();
-            text.setOrigin(textRect.left + textRect.width/2.0f,
-                        textRect.top  + textRect.height/2.0f);
-            text.setPosition(sf::Vector2f(start.x + w/2.0f,start.y + h/2.0f));
-
-            text.setLineSpacing(0);
-            text.setScale((float)w / (text.getLocalBounds().width), (float)h / (text.getLocalBounds().height));
-
-            button->get_widget()->get_main_widget_()->draw(text);
-            //painter->drawText(target, button->get_image_path(), Qt::AlignHCenter | Qt::AlignVCenter);
+            button->get_layer()->paint_text(button, button->get_image_path(), true);
 
             PRINT_("Pixmap is emty because file image doesnt exit\n");
             END_(0);
         }
         else
         {
-            sf::Sprite sprite;
-            sprite.setTexture(texture);
-            sf::Vector2u size = texture.getSize();
-            sprite.setScale((float)w/size.x, (float)h/size.y);
-            sprite.setPosition(start.x, start.y);
-            button->get_widget()->get_main_widget_()->draw(sprite);
+            button->get_layer()->paint_image(button, button->get_image_path());
         }
-        
-
-        /*QRect target(start.x, start.y,
-                     w, h);
-
-        QPixmap pix (button->get_image_path());
-
-        if (pix.isNull())
-        {
-            painter->drawText(target, button->get_image_path(), Qt::AlignHCenter | Qt::AlignVCenter);
-            PRINT_("Pixmap is emty because file image doesnt exit\n");
-            END_(0);
-        }
-
-        QRect source(0, 0, (pix.size()).width(), (pix.size()).height());
-        pix.scaled(w, h, Qt::IgnoreAspectRatio);
-
-        painter->drawPixmap(target, pix, source);
-        button->get_layer()->paint_rectangle(button, painter);
-        END_(0);*/
     }
     else
     {

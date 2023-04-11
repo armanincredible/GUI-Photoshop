@@ -37,27 +37,28 @@ int ButtonAdapterController (Button* button, WidgetManager* widget)
 int ButtonAdapterPaint(Button* button)
 {
     START_;
-/*
+
     ButtonAdapter* button_adapter = (ButtonAdapter*) button;
-    int size_x = button_adapter->ibutton_->get_size().x;
-    int size_y = button_adapter->ibutton_->get_size().y;
 
-    int x0 = button_adapter->ibutton_->get_pos().x;
-    int y0 = button_adapter->ibutton_->get_pos().y;
+    Point start {button->get_start_point()};
+    Point end {button->get_end_point()};
 
-    QRect target(x0, y0, size_x, size_y);
-    QRect src_rect(0, 0, size_x, size_y);
+    int w = end.x - start.x;
+    int h = end.y - start.y;
 
-    QImage image (QSize(size_x, size_y), QImage::Format_RGB888);
-    fprintf (stderr, "%d %d\n", size_x, size_y);
+    button_adapter->ibutton_->draw((unsigned char*)button_adapter->get_bit_array(), w, h);
+    fprintf (stderr, "finished1\n");
+    sf::Texture texture;
+    texture.create(w, h);
+    fprintf (stderr, "finished2\n");
+    sf::Sprite sprite(texture);
+    fprintf (stderr, "finished3\n");
+    sf::Uint8 pixels[100 * 100 * 4];
+    texture.update(pixels);
+    //texture.update(reinterpret_cast<sf::Uint8*>(button_adapter->get_bit_array()));
+    fprintf (stderr, "finished4\n");
+    button_adapter->get_widget()->get_main_widget_()->draw(sprite);
 
-    uchar* collor_buffer = image.bits();
-
-    button_adapter->ibutton_->draw((unsigned char*)collor_buffer, size_x,
-                                                                 size_y);
-
-    painter->drawImage(target, image, src_rect);
-*/
     END_(0);
 }
 

@@ -46,6 +46,10 @@ public:
         level_(lvl)
     {};
 
+    LayerObject* find_object_on_layer(Point xy);
+
+    int paint_text(LayerObject* obj, const char* str, bool = false);
+    int paint_image(LayerObject* obj, const char* str);
     int paint_rectangle(LayerObject*);
     int paint_rectangle_with_area(LayerObject*, Color, bool = true, Color = {0, 0, 0});
     int paint_dot(LayerObject*, Point, int, Color = {0, 0, 0});
@@ -80,6 +84,23 @@ public:
         layer->set_canvas(this);
         return 0;
     }
+
+    LayerObject* find_object_on_layer_with_level(Point xy, int level)
+    {
+        for (int i = 0; i < layer_num_; i++)
+        {
+           if (layers_[i]->get_level() == level)
+           {
+                LayerObject* obj;
+                if ((obj = layers_[i]->find_object_on_layer(xy)) != NULL)
+                {
+                    return obj;
+                }
+           }
+        } 
+        return NULL;
+    }
+
     Layer* get_active_layer (){return active_layer_;}
     void set_active_layer (Layer* layer){active_layer_ = layer;}
 

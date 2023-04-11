@@ -5,8 +5,6 @@ C_SRCS := brush.cpp
 C_OBJS := ${C_SRCS:.cpp=.o}
 OBJS := $(C_OBJS)
 
-INCLUDE_DIRS := /home/narman/Qt/5.15.2/gcc_64/include/QtGui /home/narman/Qt/5.15.2/gcc_64/include
-
 CFLAGS += $(foreach includedir,$(INCLUDE_DIRS),-I$(includedir))
 
 all: lib

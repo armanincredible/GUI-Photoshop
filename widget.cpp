@@ -108,7 +108,7 @@ int WidgetManager::click_handler(Point click)
         //widget->click_handler(click);
     }
     PRINT_("didnt find anything\n");
-    //controller_(NULL, this);
+    paint_function_(this);
     END_(-1);
 }
 
@@ -215,17 +215,32 @@ void WidgetManager::mouseMoveEvent(sf::Event *event)
     END_();
 }
 
-void WidgetManager::timerEvent(sf::Event *)
+void WidgetManager::timerEvent(sf::Time time)
 {
     START_;
 
     CurrentWork state_saved = get_work_state();
     set_work_state(CurrentWork::TimerReaction);
-    //fprintf (stderr, "%p TIMER EVENT\n", this);
 
-    if (timer_controller_)
+    WidgetManager** widgets = get_widgets_with_timer();
+    int num = get_widgets_with_timer_num();
+    for (int i = 0; i < num; i++)
     {
-        timer_controller_(this);
+        WidgetManager* widget = widgets[i];
+        //widgets[i]->set_last_time(time.asMilliseconds());
+        if (widget->get_timer() <= time.asMilliseconds() + widget->get_passed_time())
+        {
+            widget->set_passed_time(0);
+
+            if (widget->timer_controller_)
+            {
+                widget->timer_controller_(widget);
+            }
+        }
+        else
+        {
+            widget->add_passed_time(time.asMilliseconds());
+        }
     }
 
     set_work_state(state_saved);
@@ -288,6 +303,17 @@ int controller_only_buttons (Button* button, WidgetManager* widget)
     {
         PRINT_("going to repaint, %p\n", widget);
 
+        (widget->get_main_widget_())->repaint_widget();
+    }
+    END_(0);
+}
+
+int timer_controller_main_widget(WidgetManager* widget)
+{
+    START_;
+    static bool paint_line = true;
+    if (widget == widget->get_active_widget())
+    {
         (widget->get_main_widget_())->repaint_widget();
     }
     END_(0);

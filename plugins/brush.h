@@ -4,6 +4,7 @@
 #include "../plugin.h"
 //#include <QPixmap>
 
+#include <SFML/Graphics.hpp>
 #include <iostream>
 #include "string.h"
 
@@ -171,6 +172,27 @@ public:
         fprintf (stderr, "in draw\n");
         if (image_path_)
         {
+            int w = width;
+            int h = height;
+
+            sf::Texture texture;
+            texture.loadFromFile(image_path_);
+            sf::Sprite sprite;
+            sprite.setTexture(texture);
+            sf::Vector2u size = texture.getSize();
+            sprite.setScale((float)w/size.x, (float)h/size.y);
+            sprite.setPosition(0, 0);
+            const sf::Uint8* pixels = texture.copyToImage().getPixelsPtr();
+            for (int j = 0; j < height; j++)
+            {
+                for (int i = 0; i < width; i++)
+                {
+                    screen[j * 3 * width + i * 3] = pixels[j * 3 * width + i * 3];
+                    screen[j * 3 * width + i * 3 + 1] = pixels[j * 3 * width + i * 3 + 1];
+                    screen[j * 3 * width + i * 3 + 2] = pixels[j * 3 * width + i * 3 + 1];
+                }
+                //fprintf (stderr, "end\n");
+            }
             /*fprintf (stderr, "in draw image\n");
             QImage image(image_path_);
             if (image.isNull())

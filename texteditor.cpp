@@ -51,34 +51,26 @@ int StandardTextEditorPaint(WidgetManager* widget)
 
         widget->get_layer()->paint_rectangle_with_area(widget, {1, 1, 1});
 
-        //painter->drawText(x0, y0, widtht, height, Qt::AlignCenter, text_editor->get_data());
-
-        sf::Font font;
-        sf::Text text;
-        font.loadFromFile("/usr/share/fonts/fonts-go/Go-Bold.ttf");
-        text.setCharacterSize(height);
-        text.setFont(font);
-        text.setFillColor(sf::Color::Black);
-        text.setString(text_editor->get_data());
-        text.setLineSpacing(0);
-
-        sf::FloatRect textRect = text.getLocalBounds();
-        text.setOrigin(textRect.left + textRect.width/2.0f,
-                    textRect.top  + textRect.height/2.0f);
-        text.setPosition(sf::Vector2f(x0 + widtht/2.0f, y0 + height/2.0f));
-
-
-        widget->get_main_widget_()->draw(text);
+        text_editor->get_layer()->paint_text(text_editor, text_editor->get_data());
 
         if ((widget->get_work_state() == CurrentWork::TimerReaction) && (widget->get_active_widget() == text_editor))
         {
             static bool line_need = true;
 
-            int y0 = text_editor->get_start_point().y;
-            int x1 = text_editor->get_end_point().x - 3;
-            int y1 = text_editor->get_end_point().y;
+            if (line_need)
+            {
+                int y0 = text_editor->get_start_point().y;
+                int x1 = text_editor->get_end_point().x - 2;
+                int y1 = text_editor->get_end_point().y;
 
-            widget->get_layer()->paint_line(widget, {(double)x1, (double)y0}, {(double)x1, (double)y1}, 1);
+                widget->get_layer()->paint_line(widget, {(double)x1, (double)y0}, {(double)x1, (double)y1}, 3);
+
+                line_need = false;
+            }
+            else
+            {
+                line_need = true;
+            }
         }
 
         END_(0);
@@ -236,10 +228,11 @@ int controller_text_editor(Button* button, WidgetManager* widget)
     }
     END_(0);
 }
-
+#include <cassert>
 int timer_controller_text_editor(WidgetManager* widget)
 {
     START_;
+    //assert(0);
     static bool paint_line = true;
     if (widget == widget->get_active_widget())
     {

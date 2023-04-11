@@ -34,7 +34,7 @@ int paint_line (Tool* tool, LayerObject* object, Point click)
     END_(0);
 }
 
-int clear_dot (Tool* tool, LayerObject*, Point click)
+int clear_dot (Tool* tool, LayerObject* object, Point click)
 {
     START_;
     /*Color color = {1, 1, 1};
@@ -42,7 +42,18 @@ int clear_dot (Tool* tool, LayerObject*, Point click)
     paintpen.setWidth(tool->get_thickness());
     p->setPen(paintpen);
     p->drawPoint(click.x, click.y);*/
-
+    Layer* layer = object->get_layer();
+    if (!layer)
+    {
+        PRINT_("Tool clear dot hasnt layer\n");
+        END_(-1);
+    }
+    LayerObject* behind = layer->get_canvas()->find_object_on_layer_with_level(click, layer->get_level() - 1);
+    if (!behind)
+    {
+        PRINT_("Tool clear dot didnt find object behind\n");
+        object->get_layer()->paint_dot(object, click, tool->get_thickness(), Color{(double) 1, (double) 1, (double) 1});
+    }
     tool->set_last_click(click);
 
     END_(0);
