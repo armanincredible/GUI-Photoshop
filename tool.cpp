@@ -34,6 +34,17 @@ int paint_line (Tool* tool, LayerObject* object, Point click)
     END_(0);
 }
 
+int pour_region(Tool* tool, LayerObject* object, Point click)
+{
+    START_;
+
+    object->get_layer()->pour_region(object, click, tool->get_color());
+
+    tool->set_last_click(click);
+
+    END_(0);
+}
+
 int clear_dot (Tool* tool, LayerObject* object, Point click)
 {
     START_;

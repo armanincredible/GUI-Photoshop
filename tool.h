@@ -79,7 +79,7 @@ public:
     }
 };
 
-
+int pour_region(Tool*, LayerObject*, Point);
 int paint_dot (Tool*, LayerObject*, Point);
 int paint_line (Tool*, LayerObject*, Point);
 int clear_dot (Tool*, LayerObject*, Point);

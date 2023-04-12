@@ -2,6 +2,7 @@
 #include "window.h"
 #include "widget.h"
 #include "error.h"
+#include "stack.h"
 
 
 int Layer::paint_rectangle(LayerObject* object)
@@ -111,6 +112,139 @@ int Layer::paint_image(LayerObject* obj, const char* str)
     sprite.setScale((float)w/size.x, (float)h/size.y);
     sprite.setPosition(start.x, start.y);
     get_canvas()->get_render_widget()->draw(sprite);
+
+    END_(0);
+}
+
+static int push_into_stack_bit_ptr(char* pointer, char* start, char* end, Stack* st, IColor<char>* color_border, Color& into)
+{
+    START_;
+    IColor<char>* cur_color = (IColor<char>*) pointer;
+    if (pointer < end && pointer > start)
+    {
+        if (*cur_color != *color_border && 
+            !(cur_color->r == into.r && cur_color->g == into.g && cur_color->b == into.b))
+        {
+            PRINT_("push it\n");
+            stack_push(st, pointer);
+        }
+        else
+        {
+            cur_color->r = into.r;
+            cur_color->g = into.g;
+            cur_color->b = into.b;
+        }
+        END_(0);
+    }
+    END_(-1);
+    
+}
+
+static int recursive_pour_region(char* bits, unsigned offset_click, unsigned w, unsigned h, Color from, Color into)
+{
+    START_;
+
+    if (!bits)
+    {
+        PRINT_("bits null ptr\n");
+        END_(-1);
+    }
+
+    char* start_bits = bits;
+    char* end_bits = bits + h * w * 4;
+
+    bool found_not_similar = false;
+    IColor<char> border_color = {};
+    Stack stack{};
+    stack_ctor(&stack, 50); // TODO CHANGE SIZE
+    char* cur_bits = bits + offset_click;
+
+    while(true)
+    {
+        if (!found_not_similar && !(*cur_bits == from.r && cur_bits[1] == from.g && cur_bits[2] == from.b))
+        {
+            border_color = {*cur_bits, cur_bits[1], cur_bits[2]};
+            found_not_similar = true;
+        }
+
+        if (stack.size && stack_top(&stack) == cur_bits)
+        {
+            stack_pop(&stack, &cur_bits);
+        }
+
+        int r = 0;
+        r += push_into_stack_bit_ptr(cur_bits + 4, start_bits, end_bits, &stack, &border_color, into);
+        r += push_into_stack_bit_ptr(cur_bits - 4, start_bits, end_bits, &stack, &border_color, into);
+        r += push_into_stack_bit_ptr(cur_bits + w * 4, start_bits, end_bits, &stack, &border_color, into);
+        r += push_into_stack_bit_ptr(cur_bits - w * 4, start_bits, end_bits, &stack, &border_color, into);
+
+        if (!stack.size || r == -4)
+        {
+            break;
+        }
+    }
+
+    END_(0);
+}
+
+int Layer::pour_region(LayerObject* obj, Point click, Color color_into)
+{
+    START_;
+
+    //get_canvas()->get_render_widget()->add_button
+    sf::Image snapshot = get_canvas()->get_render_widget()->capture();
+    WidgetManager* MainWidget = get_canvas()->get_render_widget(); 
+    const sf::Uint8* pixels = snapshot.getPixelsPtr();
+    unsigned int pixelCount = snapshot.getSize().x * snapshot.getSize().y;
+
+    Point start {obj->get_start_point()};
+    Point end {obj->get_end_point()};
+
+    int W = MainWidget->getSize().x;
+    int H = MainWidget->getSize().y;
+    int w = end.x - start.x;
+    int h = end.y - start.y;
+
+    char* array = obj->get_bit_array();
+    int sym = 0;
+
+    for (int y = 0; y < h; y++)
+    {
+        for (int x = 0; x < w; x++)
+        {   
+            array[y * w * 4 + x * 4]     = pixels[(y + (int)start.y) * W * 4 + (x + (int)start.x) * 4];
+            array[y * w * 4 + x * 4 + 1] = pixels[(y + (int)start.y) * W * 4 + (x + (int)start.x) * 4 + 1];
+            array[y * w * 4 + x * 4 + 2] = pixels[(y + (int)start.y) * W * 4 + (x + (int)start.x) * 4 + 2];
+            array[y * w * 4 + x * 4 + 3] = pixels[(y + (int)start.y) * W * 4 + (x + (int)start.x) * 4 + 3];
+        }
+    }
+
+    Color color_from = {(double)pixels[(int)click.y * W * 4 + (int)click.x * 4],
+                        (double)pixels[(int)click.y * W * 4 + (int)click.x * 4 + 1],
+                        (double)pixels[(int)click.y * W * 4 + (int)click.x * 4 + 2]};
+
+    if (color_from != color_into)
+    {
+        recursive_pour_region(array, ((int)click.y - (int)start.y) * w * 4 + ((int)click.x - (int)start.x) * 4, 
+                            w, h, color_from, color_into);
+    }
+
+
+    /*In this part we draw our bit array*/
+
+    sf::Image image;
+    image.create(w, h, (const sf::Uint8*) array);
+
+    // Create an SFML texture from the image
+    sf::Texture texture;
+    texture.loadFromImage(image);
+
+    // Create an SFML sprite from the texture
+    sf::Sprite sprite(texture);
+
+    sprite.setPosition(start.x, start.y);
+    MainWidget->draw(sprite);
+
 
     END_(0);
 }

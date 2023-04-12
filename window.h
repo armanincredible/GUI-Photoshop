@@ -63,7 +63,7 @@ public:
     LayerObject(Point a, Point b, Layer* layer):
         CoordinateSystem(a, b)
     {
-        bit_array_ = (char*) calloc ((b.y - a.y) * (b.x - a.x) * 3, 0);
+        bit_array_ = new char[((int)b.y - (int)a.y) * ((int)b.x - (int)a.x) * 4];//(char*) calloc ((b.y - a.y) * (b.x - a.x) * 4, 0);
         set_layer(layer);
     }
     char* get_bit_array(){return bit_array_;}

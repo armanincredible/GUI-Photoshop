@@ -76,8 +76,11 @@ int make_photoshop(int argc, char *argv[])
     line_button.set_image_path("stream/line.jpg");
     Button eraser_button ({600, 800}, {800, 1000}, button_with_instrument, ButtonPaintFromPicture, &first_lvl_layer);
     eraser_button.set_image_path("stream/eraser.jpg");
+    Button pouring_button ({800, 800}, {1000, 1000}, button_with_instrument, ButtonPaintFromPicture, &first_lvl_layer);
+    pouring_button.set_image_path("stream/pour.jpg");
 
 /*Add tools*/
+    Tool pouring {pour_region};
     Tool cist {paint_dot};
     Tool line {paint_line};
     Tool eraser {clear_dot};
@@ -133,11 +136,13 @@ int make_photoshop(int argc, char *argv[])
     tool_properties.add_widget(&line_width);
 
     ToolManager tools {};
-    tools.add_tool(plugin.tool_);
+    //tools.add_tool(plugin.tool_);
+    tools.add_tool(&pouring);
     tools.add_tool(&cist);
     tools.add_tool(&line);
     tools.add_tool(&eraser);
     //eraser.set_color(Color{(double)1, (double)1, (double)1});
+    pouring_button.set_tool(&pouring);
     pen_button.set_tool(&cist);
     line_button.set_tool(&line);
     eraser_button.set_tool(&eraser);
@@ -150,10 +155,12 @@ int make_photoshop(int argc, char *argv[])
     palette_widget.add_button(&line_button);
     palette_widget.add_button(&pen_button);
     palette_widget.add_button(&eraser_button);
-    palette_widget.add_button(plugin.tool_button_);
+    palette_widget.add_button(&pouring_button);
+    //palette_widget.add_button(plugin.tool_button_);
 
     main_widget.resize_widget(1920, 1080);
-    main_widget.setFramerateLimit(144u);
+    main_widget.display();
+    main_widget.setFramerateLimit(60u);
 
     sf::Clock clock;
 

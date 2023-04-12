@@ -54,6 +54,7 @@ public:
     int paint_rectangle_with_area(LayerObject*, Color, bool = true, Color = {0, 0, 0});
     int paint_dot(LayerObject*, Point, int, Color = {0, 0, 0});
     int paint_line(LayerObject*, Point, Point, int, Color = {0, 0, 0});
+    int pour_region(LayerObject* obj, Point click, Color color);
 };
 
 class Canvas

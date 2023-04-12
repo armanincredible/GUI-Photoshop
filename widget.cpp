@@ -108,7 +108,7 @@ int WidgetManager::click_handler(Point click)
         //widget->click_handler(click);
     }
     PRINT_("didnt find anything\n");
-    paint_function_(this);
+    //paint_function_(this);
     END_(-1);
 }
 
@@ -139,10 +139,12 @@ void WidgetManager::paintEvent()
 
     if (active_widget_)
     {
+        PRINT_("Have active widget\n");
         widget = active_widget_;
     }
     else
     {
+        PRINT_("Haven't active widget\n");
         widget = this;
     }
 
@@ -152,10 +154,11 @@ void WidgetManager::paintEvent()
      */
     if (widget->get_tool_manager())
     {
+        PRINT_("Widget has tool manager\n");
         Tool* tool = get_active_tool_from_tool_manager();
         if (tool)
         {
-            tool->activity_(tool, this, get_click_coordinate());
+            tool->activity_(tool, widget, get_click_coordinate());
         }
     }
     else
@@ -163,6 +166,7 @@ void WidgetManager::paintEvent()
         /*
          * paint only active widget or all widgets if active is null
          */
+        PRINT_("Widget hasn't tool manager\n");
         widget->paint_function_(widget);
     }
     END_();
