@@ -123,13 +123,10 @@ static int push_into_stack_bit_ptr(char* pointer, char* start, char* end, Stack*
     if (pointer < end && pointer > start)
     {
         if (*cur_color != *color_border && 
-            !(cur_color->r == into.r && cur_color->g == into.g && cur_color->b == into.b))
+            !(cur_color->r == (int)into.r && cur_color->g == (int)into.g && cur_color->b == (int)into.b))
         {
             PRINT_("push it\n");
             stack_push(st, pointer);
-        }
-        else
-        {
             cur_color->r = into.r;
             cur_color->g = into.g;
             cur_color->b = into.b;
@@ -159,16 +156,33 @@ static int recursive_pour_region(char* bits, unsigned offset_click, unsigned w, 
     stack_ctor(&stack, 50); // TODO CHANGE SIZE
     char* cur_bits = bits + offset_click;
 
+    PRINT_("color_from = %d %d %d\n", (int)from.r, (int)from.g, (int)from.b);
+    PRINT_("color_into = %d %d %d\n", (int)into.r, (int)into.g, (int)into.b);
+
+    *cur_bits   = into.r;
+    cur_bits[1] = into.g; 
+    cur_bits[2] = into.b;
+
     while(true)
     {
-        if (!found_not_similar && !(*cur_bits == from.r && cur_bits[1] == from.g && cur_bits[2] == from.b))
+        PRINT_("color_cur = %d %d %d\n", *cur_bits, cur_bits[1], cur_bits[2]);
+
+        if (!found_not_similar && !(*cur_bits == (int)from.r && cur_bits[1] == (int)from.g && cur_bits[2] == (int)from.b))
         {
+            PRINT_("found border color\n ");
             border_color = {*cur_bits, cur_bits[1], cur_bits[2]};
             found_not_similar = true;
         }
-
-        if (stack.size && stack_top(&stack) == cur_bits)
+        else
         {
+            *cur_bits   = into.r;
+            cur_bits[1] = into.g; 
+            cur_bits[2] = into.b;
+        }
+
+        if (stack.size)
+        {
+            PRINT_("pop pointer\n ");
             stack_pop(&stack, &cur_bits);
         }
 
@@ -225,8 +239,9 @@ int Layer::pour_region(LayerObject* obj, Point click, Color color_into)
 
     if (color_from != color_into)
     {
-        recursive_pour_region(array, ((int)click.y - (int)start.y) * w * 4 + ((int)click.x - (int)start.x) * 4, 
-                            w, h, color_from, color_into);
+        PRINT_("colors are not similar\n");
+        recursive_pour_region(array, (int)(click.y - start.y) * w * 4 + (int)(click.x - start.x) * 4, 
+                              w, h, color_from, color_into);
     }
 
 
