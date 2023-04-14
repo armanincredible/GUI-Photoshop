@@ -21,3 +21,4 @@ lib:
 
 clean:
 	rm *.o
+	rm *.log

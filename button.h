@@ -2,7 +2,8 @@
 #define BUTTON_H
 #include "vectors.h"
 #include "tool.h"
-#include "window.h"
+#include "coordinate_system.h"
+#include "layer_object.h"
 
 enum FormType
 {

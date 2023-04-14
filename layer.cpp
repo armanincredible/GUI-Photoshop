@@ -1,8 +1,9 @@
 #include "layer.h"
-#include "window.h"
+#include "coordinate_system.h"
 #include "widget.h"
 #include "error.h"
 #include "stack.h"
+#include "layer_object.h"
 
 
 int Layer::paint_rectangle(LayerObject* object)

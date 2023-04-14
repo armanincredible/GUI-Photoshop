@@ -1,6 +1,7 @@
 #ifndef WIDGET_H
 #define WIDGET_H
-#include "window.h"
+#include "coordinate_system.h"
+#include "layer_object.h"
 #include "button.h"
 #include "tool.h"
 #include <SFML/Graphics.hpp>
