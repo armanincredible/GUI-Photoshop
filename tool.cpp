@@ -6,6 +6,8 @@ int paint_dot (Tool* tool, LayerObject* object, Point click)
 {
     START_;
 
+    //PRINT_("%d %d %d\n", (int)tool->get_color().r, (int)tool->get_color().g, (int)tool->get_color().b);
+
     object->get_layer()->paint_dot(object, click, tool->get_thickness() ,tool->get_color());
 
     tool->set_last_click(click);
@@ -38,6 +40,7 @@ int pour_region(Tool* tool, LayerObject* object, Point click)
 {
     START_;
 
+    PRINT_("%d %d %d\n", (int)tool->get_color().r, (int)tool->get_color().g, (int)tool->get_color().b);
     object->get_layer()->pour_region(object, click, tool->get_color());
 
     tool->set_last_click(click);

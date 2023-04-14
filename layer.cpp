@@ -116,20 +116,20 @@ int Layer::paint_image(LayerObject* obj, const char* str)
     END_(0);
 }
 
-static int push_into_stack_bit_ptr(char* pointer, char* start, char* end, Stack* st, IColor<char>* color_border, Color& into)
+static int push_into_stack_bit_ptr(char* pointer, char* start, char* end, Stack* st, IColor<char>* from_color, Color& into)
 {
     START_;
     IColor<char>* cur_color = (IColor<char>*) pointer;
     if (pointer < end && pointer > start)
     {
-        if (*cur_color != *color_border && 
+        if (*cur_color == *from_color && 
             !(cur_color->r == (int)into.r && cur_color->g == (int)into.g && cur_color->b == (int)into.b))
         {
             PRINT_("push it\n");
             stack_push(st, pointer);
-            cur_color->r = into.r;
-            cur_color->g = into.g;
-            cur_color->b = into.b;
+            cur_color->r = (char)(into.r  * 255);
+            cur_color->g = (char)(into.g * 255);
+            cur_color->b = (char)(into.b * 255);
         }
         END_(0);
     }
@@ -137,7 +137,7 @@ static int push_into_stack_bit_ptr(char* pointer, char* start, char* end, Stack*
     
 }
 
-static int recursive_pour_region(char* bits, unsigned offset_click, unsigned w, unsigned h, Color from, Color into)
+static int recursive_pour_region(char* bits, unsigned offset_click, unsigned w, unsigned h, Color into)
 {
     START_;
 
@@ -147,38 +147,31 @@ static int recursive_pour_region(char* bits, unsigned offset_click, unsigned w, 
         END_(-1);
     }
 
+    char* cur_bits = bits + offset_click;
+    if (*cur_bits == into.r * 255 && cur_bits[1] == into.g * 255 && cur_bits[2] == into.b * 255)
+    {
+        PRINT_("colors are similar\n");
+        END_(0);
+    }
+
     char* start_bits = bits;
     char* end_bits = bits + h * w * 4;
 
-    bool found_not_similar = false;
-    IColor<char> border_color = {};
+    IColor<char> from_color = {};
     Stack stack{};
     stack_ctor(&stack, 50); // TODO CHANGE SIZE
-    char* cur_bits = bits + offset_click;
 
-    PRINT_("color_from = %d %d %d\n", (int)from.r, (int)from.g, (int)from.b);
     PRINT_("color_into = %d %d %d\n", (int)into.r, (int)into.g, (int)into.b);
 
-    *cur_bits   = into.r;
-    cur_bits[1] = into.g; 
-    cur_bits[2] = into.b;
+    from_color = {*cur_bits, cur_bits[1], cur_bits[2]};
+    //border_color = {(char)from.r, (char)from.g, (char)from.b};
+    *cur_bits   = (char)(into.r * 255);
+    cur_bits[1] = (char)(into.g * 255); 
+    cur_bits[2] = (char)(into.b * 255);
 
     while(true)
     {
         PRINT_("color_cur = %d %d %d\n", *cur_bits, cur_bits[1], cur_bits[2]);
-
-        if (!found_not_similar && !(*cur_bits == (int)from.r && cur_bits[1] == (int)from.g && cur_bits[2] == (int)from.b))
-        {
-            PRINT_("found border color\n ");
-            border_color = {*cur_bits, cur_bits[1], cur_bits[2]};
-            found_not_similar = true;
-        }
-        else
-        {
-            *cur_bits   = into.r;
-            cur_bits[1] = into.g; 
-            cur_bits[2] = into.b;
-        }
 
         if (stack.size)
         {
@@ -187,10 +180,10 @@ static int recursive_pour_region(char* bits, unsigned offset_click, unsigned w, 
         }
 
         int r = 0;
-        r += push_into_stack_bit_ptr(cur_bits + 4, start_bits, end_bits, &stack, &border_color, into);
-        r += push_into_stack_bit_ptr(cur_bits - 4, start_bits, end_bits, &stack, &border_color, into);
-        r += push_into_stack_bit_ptr(cur_bits + w * 4, start_bits, end_bits, &stack, &border_color, into);
-        r += push_into_stack_bit_ptr(cur_bits - w * 4, start_bits, end_bits, &stack, &border_color, into);
+        r += push_into_stack_bit_ptr(cur_bits + 4, start_bits, end_bits, &stack, &from_color, into);
+        r += push_into_stack_bit_ptr(cur_bits - 4, start_bits, end_bits, &stack, &from_color, into);
+        r += push_into_stack_bit_ptr(cur_bits + w * 4, start_bits, end_bits, &stack, &from_color, into);
+        r += push_into_stack_bit_ptr(cur_bits - w * 4, start_bits, end_bits, &stack, &from_color, into);
 
         if (!stack.size || r == -4)
         {
@@ -233,16 +226,13 @@ int Layer::pour_region(LayerObject* obj, Point click, Color color_into)
         }
     }
 
-    Color color_from = {(double)pixels[(int)click.y * W * 4 + (int)click.x * 4],
-                        (double)pixels[(int)click.y * W * 4 + (int)click.x * 4 + 1],
-                        (double)pixels[(int)click.y * W * 4 + (int)click.x * 4 + 2]};
+    Color color_from = {(double)pixels[(int)click.y * W * 4 + (int)click.x * 4] / 255,
+                        (double)pixels[(int)click.y * W * 4 + (int)click.x * 4 + 1] / 255,
+                        (double)pixels[(int)click.y * W * 4 + (int)click.x * 4 + 2] / 255};
 
-    if (color_from != color_into)
-    {
-        PRINT_("colors are not similar\n");
-        recursive_pour_region(array, (int)(click.y - start.y) * w * 4 + (int)(click.x - start.x) * 4, 
-                              w, h, color_from, color_into);
-    }
+
+    recursive_pour_region(array, (int)(click.y - start.y) * w * 4 + (int)(click.x - start.x) * 4, 
+                        w, h, color_into);
 
 
     /*In this part we draw our bit array*/

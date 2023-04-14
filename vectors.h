@@ -2,6 +2,7 @@
 #define VECTORS_H
 #include "math.h"
 
+#define EPS__ 10e-8
 #define square(num) (num * num)
 
 struct Color
@@ -12,7 +13,7 @@ struct Color
 
     bool operator == (Color& color)
     {
-        return (this->r == color.r) && (this->g == color.g) && (this->b == color.b);
+        return (fabs(this->r - color.r) < EPS__) && (fabs(this->g - color.g) < EPS__) && (fabs(this->b - color.b) < EPS__);
     }
     bool operator != (Color& color)
     {
