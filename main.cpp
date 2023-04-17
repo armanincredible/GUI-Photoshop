@@ -164,6 +164,8 @@ int make_photoshop(int argc, char *argv[])
 
     sf::Clock clock;
 
+    bool flag = true;
+
     while (main_widget.isOpen())
     {
         sf::Event event;
@@ -200,6 +202,11 @@ int make_photoshop(int argc, char *argv[])
 
         clock.restart();
 
+        if (flag)
+        {
+            main_widget.paintEvent();
+            flag = false;
+        }
         main_widget.display();
         //main_widget.paintEvent();
     }

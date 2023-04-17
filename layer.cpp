@@ -13,7 +13,7 @@ int Layer::paint_rectangle(LayerObject* object)
     END_(0);
 }
 
-int Layer::paint_dot(LayerObject*, Point click, int thickness, Color color)
+int Layer::paint_dot(LayerObject* object, Point click, int thickness, Color color)
 {
     START_;
 
@@ -25,6 +25,7 @@ int Layer::paint_dot(LayerObject*, Point click, int thickness, Color color)
 
     get_canvas()->get_render_widget()->draw(shape);
 
+    //object->fill_bits_from_widget_manager(get_canvas()->get_render_widget());
 
     END_(0);
 }
@@ -53,6 +54,8 @@ int Layer::paint_rectangle_with_area(LayerObject* object, Color color, bool area
     }
 
     get_canvas()->get_render_widget()->draw(rectangle);
+
+    //object->fill_bits_from_widget_manager(get_canvas()->get_render_widget());
 
     END_(0);
 }
@@ -91,6 +94,7 @@ int Layer::paint_text(LayerObject* obj, const char* str, bool scale)
     //text.
 
     get_canvas()->get_render_widget()->draw(text);
+    //obj->fill_bits_from_widget_manager(get_canvas()->get_render_widget());
 
     END_(0);
 }
@@ -113,6 +117,8 @@ int Layer::paint_image(LayerObject* obj, const char* str)
     sprite.setScale((float)w/size.x, (float)h/size.y);
     sprite.setPosition(start.x, start.y);
     get_canvas()->get_render_widget()->draw(sprite);
+
+    //obj->fill_bits_from_widget_manager(get_canvas()->get_render_widget());
 
     END_(0);
 }
@@ -199,11 +205,7 @@ int Layer::pour_region(LayerObject* obj, Point click, Color color_into)
 {
     START_;
 
-    //get_canvas()->get_render_widget()->add_button
-    sf::Image snapshot = get_canvas()->get_render_widget()->capture();
     WidgetManager* MainWidget = get_canvas()->get_render_widget(); 
-    const sf::Uint8* pixels = snapshot.getPixelsPtr();
-    unsigned int pixelCount = snapshot.getSize().x * snapshot.getSize().y;
 
     Point start {obj->get_start_point()};
     Point end {obj->get_end_point()};
@@ -212,31 +214,32 @@ int Layer::pour_region(LayerObject* obj, Point click, Color color_into)
     int H = MainWidget->getSize().y;
     int w = end.x - start.x;
     int h = end.y - start.y;
-
     char* array = obj->get_bit_array();
-    int sym = 0;
 
-    for (int y = 0; y < h; y++)
-    {
-        for (int x = 0; x < w; x++)
-        {   
-            array[y * w * 4 + x * 4]     = pixels[(y + (int)start.y) * W * 4 + (x + (int)start.x) * 4];
-            array[y * w * 4 + x * 4 + 1] = pixels[(y + (int)start.y) * W * 4 + (x + (int)start.x) * 4 + 1];
-            array[y * w * 4 + x * 4 + 2] = pixels[(y + (int)start.y) * W * 4 + (x + (int)start.x) * 4 + 2];
-            array[y * w * 4 + x * 4 + 3] = pixels[(y + (int)start.y) * W * 4 + (x + (int)start.x) * 4 + 3];
-        }
-    }
 
-    Color color_from = {(double)pixels[(int)click.y * W * 4 + (int)click.x * 4] / 255,
-                        (double)pixels[(int)click.y * W * 4 + (int)click.x * 4 + 1] / 255,
-                        (double)pixels[(int)click.y * W * 4 + (int)click.x * 4 + 2] / 255};
-
+    obj->fill_bits_from_widget_manager(get_canvas()->get_render_widget());
 
     recursive_pour_region(array, (int)(click.y - start.y) * w * 4 + (int)(click.x - start.x) * 4, 
                         w, h, color_into);
 
 
     /*In this part we draw our bit array*/
+
+    paint_from_bits(obj);
+
+    END_(0);
+}
+
+int Layer::paint_from_bits(LayerObject* obj)
+{
+    START_;
+
+    Point start {obj->get_start_point()};
+    Point end {obj->get_end_point()};
+    int w = end.x - start.x;
+    int h = end.y - start.y;
+    char* array = obj->get_bit_array();
+    WidgetManager* MainWidget = get_canvas()->get_render_widget();
 
     sf::Image image;
     image.create(w, h, (const sf::Uint8*) array);
@@ -250,7 +253,6 @@ int Layer::pour_region(LayerObject* obj, Point click, Color color_into)
 
     sprite.setPosition(start.x, start.y);
     MainWidget->draw(sprite);
-
 
     END_(0);
 }
@@ -283,6 +285,7 @@ int Layer::paint_line(LayerObject* obj, Point prev_click, Point click, int thick
     line.setPosition(prev_click.x, prev_click.y);
 
     get_canvas()->get_render_widget()->draw(line);
+    //obj->fill_bits_from_widget_manager(get_canvas()->get_render_widget());
 
     END_(0);
 }

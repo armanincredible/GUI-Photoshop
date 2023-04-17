@@ -3,6 +3,7 @@
 #include <SFML/Graphics.hpp>
 #include "math.h"
 #include "layer.h"
+#include "coordinate_system.h"
 
 class LayerObject : public CoordinateSystem
 {

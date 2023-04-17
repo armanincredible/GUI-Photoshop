@@ -133,6 +133,7 @@ void WidgetManager::paintEvent()
     static bool have_background = false;
     if (!have_background)
     {
+        PRINT_("i'm main widget and paint white backside\n");
         get_layer()->paint_rectangle_with_area(this, {1, 1, 1});
         have_background = true;
     }

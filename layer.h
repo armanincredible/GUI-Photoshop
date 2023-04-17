@@ -55,6 +55,7 @@ public:
     int paint_dot(LayerObject*, Point, int, Color = {0, 0, 0});
     int paint_line(LayerObject*, Point, Point, int, Color = {0, 0, 0});
     int pour_region(LayerObject* obj, Point click, Color color);
+    int paint_from_bits(LayerObject* obj);
 };
 
 class Canvas

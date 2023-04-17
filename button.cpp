@@ -22,8 +22,6 @@ int button_with_instrument (Button* my_button, WidgetManager* obj)
         WidgetManager* widget = (WidgetManager*) obj;
         widget->set_active_tool_manager((ToolManager*)tool->get_tool_manager());
 
-        PRINT_("im here\n");
-
         widget->repaint_all_with_state(CurrentWork::ChangeActiveTool);
 
         END_(0);
