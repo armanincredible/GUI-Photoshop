@@ -10,7 +10,9 @@ class Logger
 {
 public:
     Logger(){
-        file_output_ = fopen("Log.log", "w");
+        #ifdef DEBUG
+            file_output_ = fopen("Log.log", "w");
+        #endif
     }
     ~Logger(){
         if (file_output_)
