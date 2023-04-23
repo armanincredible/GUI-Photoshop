@@ -40,30 +40,23 @@ public:
     int get_thickness(){return thickness_;}
 };
 
+#include <vector>
+
 class ToolManager
 {
 private:
     Tool* cur_work_tool_ = NULL;
-    Tool** tools_ = NULL;
-    size_t tools_num_ = 0;
+
+    std::vector <Tool*> tools_;
 public:
     int add_tool (Tool* tool)
     {
-        if (!tools_num_ && tools_)
-        {
-            printf ("ERROR %d\n", __LINE__);
-        }
         if (!tool)
         {
+            printf ("ERROR %d\n", __LINE__);
             return -1;
         }
-        tools_num_++;
-        tools_ = (Tool**) realloc (tools_, tools_num_ * sizeof(Tool*));
-        if (tools_ == NULL)
-        {
-            return -1;
-        }
-        tools_[tools_num_ - 1] = tool;
+        tools_.push_back(tool);
         tool->set_tool_manager(this);
         return 0;
     }
@@ -72,10 +65,6 @@ public:
 
     ~ToolManager()
     {
-        if (tools_)
-        {
-            free(tools_);
-        }
     }
 };
 

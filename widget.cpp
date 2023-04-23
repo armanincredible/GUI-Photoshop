@@ -53,7 +53,7 @@ int WidgetManager::click_handler(Point click)
 {
     START_;
     WidgetManager* widget = NULL;
-    for (int i = 0; i < widgets_num_; i++)
+    for (int i = 0; i < get_widgets_num(); i++)
     {
         widget = widgets_[i];
         Button* button = NULL;

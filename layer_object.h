@@ -17,6 +17,12 @@ public:
         bit_array_ = new char[((int)b.y - (int)a.y) * ((int)b.x - (int)a.x) * 4];//(char*) calloc ((b.y - a.y) * (b.x - a.x) * 4, 0);
         set_layer(layer);
     }
+
+    ~LayerObject()
+    {
+        delete bit_array_;
+    }
+    
     char* get_bit_array(){return bit_array_;}
     
     int fill_bits_from_widget_manager(WidgetManager*);

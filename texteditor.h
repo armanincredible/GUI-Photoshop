@@ -43,8 +43,11 @@ public:
         info_type_(info_type)
     {
         data_ = (char*) calloc (10, sizeof(char));
-        set_need_in_key_events(true);
-        data_len_ = 10;
+        if (data_)
+        {
+            set_need_in_key_events(true);
+            data_len_ = 10;
+        }
     }
 
     void set_str (const char* str){str_ = str;}

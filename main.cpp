@@ -198,7 +198,7 @@ int make_photoshop(int argc, char *argv[])
         }
 
         sf::Time elapsed1 = clock.getElapsedTime();
-        //main_widget.timerEvent(elapsed1);
+        main_widget.timerEvent(elapsed1);
 
         clock.restart();
 

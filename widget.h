@@ -5,6 +5,7 @@
 #include "button.h"
 #include "tool.h"
 #include <SFML/Graphics.hpp>
+#include <stdlib.h>
 
 enum TypeWidget
 {
@@ -53,17 +54,13 @@ private:
 
     bool need_in_key_events_ = false;
 
-    WidgetManager** widgets_ = NULL;
-    size_t widgets_num_ = 0;
-
-    WidgetManager** widgets_with_timer_ = NULL;
-    size_t widgets_with_timer_num_ = 0;
+    std::vector <WidgetManager*> widgets_;
+    std::vector <WidgetManager*> widgets_with_timer_;
 
     ToolManager* tool_manager_ = NULL;
     size_t tools_num_ = 0;
 
-    Button** buttons_ = NULL;
-    size_t buttons_num_ = 0;
+    std::vector <Button*> buttons_;
 
     WidgetManager* parent_widget_ = NULL;
     char* widget_name = NULL;
@@ -136,14 +133,6 @@ public:
 
     ~WidgetManager()
     {
-        if (widgets_)
-        {
-            free(widgets_);
-        }
-        if (buttons_)
-        {
-            free(buttons_);
-        }
         if (is_has_timer_)
         {
             //killTimer(timerId_);
@@ -152,67 +141,50 @@ public:
 
     int add_widget_on_timer(WidgetManager* widget)
     {
-        if (!widgets_with_timer_num_ && widgets_with_timer_)
+        if (!widget)
         {
             printf ("ERROR %d\n", __LINE__);
-        }
-        widgets_with_timer_num_++;
-        widgets_with_timer_ = (WidgetManager**) realloc (widgets_with_timer_, widgets_with_timer_num_ * sizeof(WidgetManager*));
-        if (widgets_with_timer_ == NULL)
-        {
             return -1;
         }
-        widgets_with_timer_[widgets_with_timer_num_ - 1] = widget;
-        return 0;
-    }
-    size_t get_widgets_with_timer_num (){return widgets_with_timer_num_;}
-    WidgetManager** get_widgets_with_timer (){return widgets_with_timer_;}
-
-    int add_widget (WidgetManager* widget)
-    {
-        if (!widgets_num_ && widgets_)
-        {
-            printf ("ERROR %d\n", __LINE__);
-        }
-        widgets_num_++;
-        widgets_ = (WidgetManager**) realloc (widgets_, widgets_num_ * sizeof(WidgetManager*));
-        if (widgets_ == NULL)
-        {
-            return -1;
-        }
-        widgets_[widgets_num_ - 1] = widget;
+        widgets_with_timer_.push_back(widget);
         widget->set_parent_widget(this);
         return 0;
     }
-    WidgetManager** get_widgets (){return widgets_;}
-    void set_widgets (WidgetManager** widgets){widgets_ = widgets;}
-    void set_widgets_num (size_t num){widgets_num_ = num;}
-    size_t get_widgets_num (){return widgets_num_;}
+    size_t get_widgets_with_timer_num (){return widgets_with_timer_.size();}
+    WidgetManager** get_widgets_with_timer (){return widgets_with_timer_.data();}
+
+    int add_widget (WidgetManager* widget)
+    {
+        if (!widget)
+        {
+            printf ("ERROR %d\n", __LINE__);
+            return -1;
+        }
+        widgets_.push_back(widget);
+        widget->set_parent_widget(this);
+        return 0;
+    }
+
+    WidgetManager** get_widgets (){return widgets_.data();}
+    //void set_widgets (WidgetManager** widgets){widgets_ = widgets;}
+    //void set_widgets_num (size_t num){widgets_num_ = num;}
+    size_t get_widgets_num (){return widgets_.size();}
 
     int add_button (Button* button)
     {
-        if (!buttons_num_ && buttons_)
-        {
-            printf ("ERROR %d\n", __LINE__);
-        }
         if (!button)
         {
+            printf ("ERROR %d\n", __LINE__);
             return -1;
         }
-        buttons_num_++;
-        buttons_ = (Button**) realloc (buttons_, buttons_num_ * sizeof(Button*));
-        if (buttons_ == NULL)
-        {
-            return -1;
-        }
-        buttons_[buttons_num_ - 1] = button;
+        buttons_.push_back(button);
         button->set_widget(this);
         return 0;
     }
-    Button** get_buttons (){return buttons_;}
-    void set_buttons (Button** buttons){buttons_ = buttons;}
-    void set_buttons_num (size_t num){buttons_num_ = num;}
-    size_t get_buttons_num (){return buttons_num_;}
+    Button** get_buttons (){return buttons_.data();}
+    //void set_buttons (Button** buttons){buttons_ = buttons;}
+    //void set_buttons_num (size_t num){buttons_num_ = num;}
+    size_t get_buttons_num (){return buttons_.size();}
 
     WidgetManager* get_parent_widget (){return parent_widget_;}
     void set_parent_widget (WidgetManager* widget){parent_widget_ = widget;}
