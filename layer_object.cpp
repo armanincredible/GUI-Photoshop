@@ -1,14 +1,19 @@
 #include "layer_object.h"
 #include "widget.h"
 #include "error.h"
+#include <mutex>
 
 #define MIN(a, b) ((a) < (b) ? (a) : (b))
+
+std::mutex mutex;
 
 int LayerObject::fill_bits_from_widget_manager(WidgetManager* widget)
 {
     START_;
     if (!widget)
         END_(-1);
+
+    mutex.lock();
 
     if (widget == widget->get_main_widget_())
     {
@@ -46,6 +51,8 @@ int LayerObject::fill_bits_from_widget_manager(WidgetManager* widget)
             array[y * w * 4 + x * 4 + 3] = pixels[(y + (int)start.y) * W * 4 + (x + (int)start.x) * 4 + 3];
         }
     }
+
+    mutex.unlock();
 
     END_(0);
 }
