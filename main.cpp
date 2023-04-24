@@ -62,7 +62,7 @@ int make_photoshop(int argc, char *argv[])
     canvas.set_render_widget(&main_widget);
 
     WidgetManager paint_widget ({200, 110, 0}, {1700, 600}, &main_widget, controller_paint, StandardWidgetPaint, &first_lvl_layer);
-    WidgetManager palette_widget ({200, 800}, {1000, 1000}, &main_widget, controller_paint, StandardWidgetPaint, &first_lvl_layer);
+    WidgetManager palette_widget ({200, 800}, {1200, 1000}, &main_widget, controller_paint, StandardWidgetPaint, &first_lvl_layer);
     WidgetManager tool_properties ({200, 50}, {1700, 110}, &main_widget, controller_paint, StandardWidgetPaint, &first_lvl_layer);
     //paint_widget.resize(100, 100);
     fprintf (stderr, "%p\n", &main_widget);
@@ -136,7 +136,7 @@ int make_photoshop(int argc, char *argv[])
     tool_properties.add_widget(&line_width);
 
     ToolManager tools {};
-    //tools.add_tool(plugin.tool_);
+    tools.add_tool(plugin.tool_);
     tools.add_tool(&pouring);
     tools.add_tool(&cist);
     tools.add_tool(&line);
@@ -156,7 +156,7 @@ int make_photoshop(int argc, char *argv[])
     palette_widget.add_button(&pen_button);
     palette_widget.add_button(&eraser_button);
     palette_widget.add_button(&pouring_button);
-    //palette_widget.add_button(plugin.tool_button_);
+    palette_widget.add_button(plugin.tool_button_);
 
     main_widget.resize_widget(1920, 1080);
     main_widget.display();

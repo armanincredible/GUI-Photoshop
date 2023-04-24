@@ -63,35 +63,57 @@ public:
 
 class BrushTool : public ITool
 {
+private:
+    ColorPl<double> color_ = {};
+    int thickness_ = 0;
+public:
     void apply(unsigned char* pixmap, int width, int height, Pair<int> point) override
     {
         /*for (int i = 0; i < 10000; i++)
         {
             printf ("\n");
         }*/
-        for (int j = 0; j < height; j++)
+        
+        for (int j = point.y - thickness_; j < point.y + thickness_; j++)
         {
-            for (int i = 0; i < width; i++)
+            for (int i = point.x - thickness_; i < point.x + thickness_; i++)
             {
-                //fprintf (stderr, "%d\n", j * 3 * width + i);
-                pixmap[j * 3 * width + i * 3] = 255;
-                pixmap[j * 3 * width + i * 3 + 1] = 255;
-                pixmap[j * 3 * width + i * 3 + 2] = 255;
+
+                if ((i - point.x) * (i - point.x) + (j - point.y) * (j - point.y) <= thickness_ * thickness_)
+                {
+                    pixmap[j * 4 * width + i * 4] = color_.r * 255;
+                    pixmap[j * 4 * width + i * 4 + 1] = color_.g * 255;
+                    pixmap[j * 4 * width + i * 4 + 2] = color_.b * 255;
+                    pixmap[j * 4 * width + i * 4 + 3] = 255;
+                }
             }
             //fprintf (stderr, "end\n");
         }
-
-        for (int j = point.y - 3; j < point.y + 3; j++)
-        {
-            for (int i = point.x - 3; i < point.x + 3; i++)
-            {
-                pixmap[j * 3 * width + i * 3] = 0;
-                pixmap[j * 3 * width + i * 3 + 1] = 0;
-                pixmap[j * 3 * width + i * 3 + 2] = 0;
-            }
-        }
         return;
     }
+
+    void set_color(ColorPl<double> color) override
+    {
+        color_ = color;
+        return;
+    }
+
+    ColorPl<double> get_color() override
+    {
+        return color_;
+    }
+
+    void set_thickness(int thickness) override
+    {
+        thickness_ = thickness;
+        return;
+    }
+
+    int get_thickness() override
+    {
+        return thickness_;
+    }
+
     void deactivate() override
     {
         return;
@@ -175,52 +197,22 @@ public:
             int w = width;
             int h = height;
 
-            sf::Texture texture;
-            texture.loadFromFile(image_path_);
-            sf::Sprite sprite;
-            sprite.setTexture(texture);
-            sf::Vector2u size = texture.getSize();
-            sprite.setScale((float)w/size.x, (float)h/size.y);
-            sprite.setPosition(0, 0);
-            const sf::Uint8* pixels = texture.copyToImage().getPixelsPtr();
+            sf::Image image;
+            image.create(w, h);
+            image.loadFromFile(image_path_);
+            
+            const sf::Uint8* pixels = image.getPixelsPtr();
             for (int j = 0; j < height; j++)
             {
                 for (int i = 0; i < width; i++)
                 {
-                    screen[j * 3 * width + i * 3] = pixels[j * 3 * width + i * 3];
-                    screen[j * 3 * width + i * 3 + 1] = pixels[j * 3 * width + i * 3 + 1];
-                    screen[j * 3 * width + i * 3 + 2] = pixels[j * 3 * width + i * 3 + 1];
+                    screen[j * 4 * width + i * 4]     = pixels[j * 4 * width + i * 4];
+                    screen[j * 4 * width + i * 4 + 1] = pixels[j * 4 * width + i * 4 + 1];
+                    screen[j * 4 * width + i * 4 + 2] = pixels[j * 4 * width + i * 4 + 2];
+                    screen[j * 4 * width + i * 4 + 3] = pixels[j * 4 * width + i * 4 + 3];
                 }
                 //fprintf (stderr, "end\n");
             }
-            /*fprintf (stderr, "in draw image\n");
-            QImage image(image_path_);
-            if (image.isNull())
-            {
-                fprintf (stderr, "image is null\n");
-                return;
-            }
-            image.scaled(width, height);
-            //image.copy()
-
-            image.convertTo(QImage::Format_RGB888);
-            fprintf (stderr, "%d in bytes", (int)image.sizeInBytes());
-            uchar* array = image.bits();
-
-            //memcpy(screen, image.bits(), width * 3 * height);
-            for (int j = 0; j < height; j++)
-            {
-                for (int i = 0; i < width; i++)
-                {
-                    //fprintf (stderr, "%d\n", j * 3 * width + i);
-                    screen[j * 3 * width + i * 3] = array[j * 3 * width + i * 3];
-                    screen[j * 3 * width + i * 3 + 1] = array[j * 3 * width + i * 3 + 1];
-                    screen[j * 3 * width + i * 3 + 2] = array[j * 3 * width + i * 3 + 1];
-                }
-                //fprintf (stderr, "end\n");
-            }
-            //memcpy(screen, image.bits(), width * 3 * height);
-            fprintf (stderr, "in draw2\n");*/
         }
         else
         {

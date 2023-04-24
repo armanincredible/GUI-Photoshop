@@ -8,6 +8,14 @@ struct Pair
     T y;
 };
 
+template <typename T>
+struct ColorPl
+{
+    T r;
+    T g;
+    T b;
+};
+
 class IWidget
 {
 private:
@@ -133,6 +141,11 @@ public:
      */
     virtual void apply(unsigned char* pixmap, int width, int height, Pair<int> point) = 0;
 
+    virtual void set_color(ColorPl<double> color) = 0;
+    virtual ColorPl<double> get_color() = 0;
+
+    virtual void set_thickness(int thickness) = 0;
+    virtual int  get_thickness() = 0;
     /**
      * Deactivate tool.
      */
