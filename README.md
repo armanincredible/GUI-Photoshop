@@ -19,3 +19,6 @@ This project is aimed at creating a gui and based on it to build a program like 
 
 Also you can use -DDEBUG (check makefile) to get log file with name Log.log
 
+## Plugins
+
+The GUI has support for adding a plugin. The plugin.h file contains the API that is used to interact with the plugin. An example plugin can be found in plugins/brush.h and its source file.
