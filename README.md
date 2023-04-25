@@ -8,9 +8,9 @@ This project is aimed at creating a gui and based on it to build a program like 
 
 - Install SFML
 - Clone project 
-  ``` 
-    git clone https://github.com/armanincredible/Compiler.git
-  ```
+``` 
+  git clone https://github.com/armanincredible/Compiler.git
+```
 - Build it and run
 ```
   make
