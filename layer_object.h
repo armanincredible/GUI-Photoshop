@@ -4,6 +4,7 @@
 #include "math.h"
 #include "layer.h"
 #include "coordinate_system.h"
+#include "stdbool.h"
 
 class LayerObject : public CoordinateSystem
 {
@@ -25,7 +26,7 @@ public:
     
     char* get_bit_array(){return bit_array_;}
     
-    int fill_bits_from_widget_manager(WidgetManager*);
+    int fill_bits_from_widget_manager(WidgetManager*, bool* state);
     int set_layer(Layer* layer){layer_ = layer; return layer->add_object(this);}
     Layer* get_layer(void){return layer_;}
 };

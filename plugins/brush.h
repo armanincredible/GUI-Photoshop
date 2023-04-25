@@ -202,17 +202,9 @@ public:
             image.loadFromFile(image_path_);
             
             const sf::Uint8* pixels = image.getPixelsPtr();
-            for (int j = 0; j < height; j++)
-            {
-                for (int i = 0; i < width; i++)
-                {
-                    screen[j * 4 * width + i * 4]     = pixels[j * 4 * width + i * 4];
-                    screen[j * 4 * width + i * 4 + 1] = pixels[j * 4 * width + i * 4 + 1];
-                    screen[j * 4 * width + i * 4 + 2] = pixels[j * 4 * width + i * 4 + 2];
-                    screen[j * 4 * width + i * 4 + 3] = pixels[j * 4 * width + i * 4 + 3];
-                }
-                //fprintf (stderr, "end\n");
-            }
+
+            std::copy(pixels, pixels + 4 * height * width, screen);
+            
         }
         else
         {

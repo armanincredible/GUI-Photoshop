@@ -6,47 +6,13 @@
 #include "layer.h"
 
 #include "plugins/adapter.h"
+#include "iostream"
 
-int test(int argc, char *argv[])
+#include <SFML/Audio.hpp>
+
+
+int load_music()
 {
-    Canvas canvas;
-    Layer null_lvl_layer(0);
-    Layer first_lvl_layer(1);
-
-    WidgetManager main_widget ({0, 0, 0}, {1920, 1080}, NULL, StandardWidgetPaint, &null_lvl_layer);
-    //WidgetManager paint_widget ({200, 110, 0}, {1700, 600}, &main_widget, controller_paint, StandardWidgetPaint, &first_lvl_layer);
-
-
-    //main_widget.resize_widget(1920, 1080);
-    main_widget.show_widget();
-    //main_widget.display();
-    //main_widget.show_widget();
-
-    /*while (main_widget.isOpen())
-    {
-        fprintf (stderr, "in while");
-        sf::Event event;
-        while (main_widget.pollEvent(event))
-        {
-            if (event.type == sf::Event::Closed)
-            {
-                main_widget.close();
-            }
-            if (event.type == sf::Event::KeyPressed)
-            {
-                main_widget.keyPressEvent(&event);
-            }
-            if (event.type == sf::Event::MouseButtonPressed)
-            {
-                main_widget.mousePressEvent(&event);
-            }
-        }
-
-        main_widget.clear();
-        main_widget.show_widget();
-    }*/
-
-    return 0;
 }
 
 int make_photoshop(int argc, char *argv[])
@@ -65,7 +31,12 @@ int make_photoshop(int argc, char *argv[])
     WidgetManager palette_widget ({200, 800}, {1200, 1000}, &main_widget, controller_paint, StandardWidgetPaint, &first_lvl_layer);
     WidgetManager tool_properties ({200, 50}, {1700, 110}, &main_widget, controller_paint, StandardWidgetPaint, &first_lvl_layer);
     //paint_widget.resize(100, 100);
+    WidgetManager volume_widget ({1800, 600, 0}, {1850, 1000}, &main_widget, controller_with_volume_button, VolumeWidgetPaint, &first_lvl_layer);
     fprintf (stderr, "%p\n", &main_widget);
+
+    Button volume_button ({1810, 800}, {1840, 810}, button_change_volume, StandardButtonPaint, &first_lvl_layer);
+    volume_button.set_color({0, 0, 0});
+    volume_widget.add_button(&volume_button);
 
     PluginAdapter plugin((char*)"/home/narman/C++/SfmlGui/plugins/libPluginBrush.so", &paint_widget, &main_widget, &first_lvl_layer);
     //fprintf (stderr, "pass\n");
@@ -148,6 +119,7 @@ int make_photoshop(int argc, char *argv[])
     eraser_button.set_tool(&eraser);
 
     main_widget.add_widget(&paint_widget);
+    main_widget.add_widget(&volume_widget);
     main_widget.add_widget(&palette_widget);
     main_widget.add_widget(&tool_properties);
 
@@ -165,6 +137,8 @@ int make_photoshop(int argc, char *argv[])
     sf::Clock clock;
 
     bool flag = true;
+
+    main_widget.play_music();
 
     while (main_widget.isOpen())
     {
@@ -198,7 +172,7 @@ int make_photoshop(int argc, char *argv[])
         }
 
         sf::Time elapsed1 = clock.getElapsedTime();
-        main_widget.timerEvent(elapsed1);
+        //main_widget.timerEvent(elapsed1);
 
         clock.restart();
 

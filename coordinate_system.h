@@ -46,6 +46,16 @@ public:
     {
         return start_point_;
     }
+    void set_start_point(Point p)
+    {
+        start_point_ = p;
+        return;
+    }
+    void set_end_point(Point p)
+    {
+        end_point_ = p;
+        return;
+    }
     Point get_end_point()const
     {
         return end_point_;

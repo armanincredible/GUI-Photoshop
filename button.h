@@ -89,6 +89,7 @@ public:
 };
 
 int button_with_instrument (Button*, WidgetManager*);
+int button_change_volume (Button*, WidgetManager*);
 int button_change_color_tool (Button*, WidgetManager*);
 int button_change_thickness (Button*, WidgetManager*);
 

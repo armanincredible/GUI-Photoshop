@@ -45,6 +45,21 @@ int StandardWidgetPaint(WidgetManager* widget)
     END_(0);
 }
 
+int VolumeWidgetPaint(WidgetManager* widget)
+{
+    START_;
+
+    widget->get_layer()->paint_rectangle_with_area(widget, {1,1,1}, true);
+    StandardWidgetPaint(widget);
+
+    Point start {widget->get_start_point().x + widget->width() / 2, widget->get_start_point().y};
+    Point end {widget->get_start_point().x + widget->width() / 2, widget->get_end_point().y};
+
+    widget->get_layer()->paint_line(widget, start, end, 3);
+
+    END_(0);
+}
+
 /*
  * Function find object, which area was clicked and call controller
  * If controller was called function return 0, another way -1
@@ -56,10 +71,13 @@ int WidgetManager::click_handler(Point click)
     for (int i = 0; i < get_widgets_num(); i++)
     {
         widget = widgets_[i];
+        
         Button* button = NULL;
         Button** buttons = widget->get_buttons();
         for (int i = 0; i < widget->get_buttons_num(); i++)
         {
+            widget->set_click_coordinate(click);
+
             button = buttons[i];
             if (button->is_my_area(click))
             {
@@ -281,6 +299,25 @@ WidgetManager *WidgetManager::get_main_widget_()
 int controller_paint (Button* button, WidgetManager* widget)
 {
     START_;
+    if (button)
+    {
+        button->response_(button, widget);
+        END_(0);
+    }
+    if (widget)
+    {
+        PRINT_("going to repaint, %p\n", widget);
+
+        (widget->get_main_widget_())->repaint_widget();
+    }
+
+    END_(0);
+}
+
+int controller_with_volume_button (Button* button, WidgetManager* widget)
+{
+    START_;
+    button = widget->get_buttons()[0];
     if (button)
     {
         button->response_(button, widget);

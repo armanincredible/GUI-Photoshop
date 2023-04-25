@@ -29,6 +29,27 @@ int button_with_instrument (Button* my_button, WidgetManager* obj)
     END_(0);
 }
 
+int button_change_volume (Button* my_button, WidgetManager* obj)
+{
+    START_;
+
+    int heigh = my_button->heigh();
+    int offset = my_button->get_start_point().y - obj->get_click_coordinate().y;
+    float offset_proc = (offset * 100) / obj->heigh();
+
+    my_button->set_start_point({my_button->get_start_point().x, obj->get_click_coordinate().y});
+    my_button->set_end_point({my_button->get_end_point().x, obj->get_click_coordinate().y + heigh});
+
+    WidgetManager* widget = (WidgetManager*) obj;
+    WidgetManager* main_widget = widget->get_main_widget_();
+    main_widget->change_music_volume(offset_proc + main_widget->get_music_volume());
+    //widget->set_active_tool_manager((ToolManager*)tool->get_tool_manager());
+
+    widget->repaint_with_state(CurrentWork::ChangeActiveTool);
+
+    END_(0);
+}
+
 int button_change_color_tool (Button* my_button, WidgetManager* obj)
 {
     START_;

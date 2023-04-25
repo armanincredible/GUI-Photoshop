@@ -2,18 +2,19 @@
 #include "widget.h"
 #include "error.h"
 #include <mutex>
+#include <condition_variable>
 
 #define MIN(a, b) ((a) < (b) ? (a) : (b))
 
 std::mutex mutex;
 
-int LayerObject::fill_bits_from_widget_manager(WidgetManager* widget)
+int LayerObject::fill_bits_from_widget_manager(WidgetManager* widget, bool* state)
 {
+    mutex.lock();
+
     START_;
     if (!widget)
         END_(-1);
-
-    mutex.lock();
 
     if (widget == widget->get_main_widget_())
     {
@@ -43,16 +44,22 @@ int LayerObject::fill_bits_from_widget_manager(WidgetManager* widget)
 
     for (int y = 0; y < MIN(h, H); y++)
     {
-        for (int x = 0; x < w; x++)
+        /*for (int x = 0; x < w; x++)
         {   
             array[y * w * 4 + x * 4]     = pixels[(y + (int)start.y) * W * 4 + (x + (int)start.x) * 4];
             array[y * w * 4 + x * 4 + 1] = pixels[(y + (int)start.y) * W * 4 + (x + (int)start.x) * 4 + 1];
             array[y * w * 4 + x * 4 + 2] = pixels[(y + (int)start.y) * W * 4 + (x + (int)start.x) * 4 + 2];
             array[y * w * 4 + x * 4 + 3] = pixels[(y + (int)start.y) * W * 4 + (x + (int)start.x) * 4 + 3];
-        }
+        }*/
+        std::copy(pixels + (y + (int)start.y) * W * 4 + (int)start.x * 4,
+                  pixels + (y + (int)start.y) * W * 4 + (w + (int)start.x) * 4, 
+                  array + y * w * 4);
     }
 
     mutex.unlock();
+
+    if (state)
+        *state = true;
 
     END_(0);
 }

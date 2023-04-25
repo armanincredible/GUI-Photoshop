@@ -5,6 +5,9 @@
 #include "stack.h"
 #include "layer_object.h"
 #include <thread>
+#include <future>
+#include <thread>
+#include <chrono>
 
 
 int Layer::paint_rectangle(LayerObject* object)
@@ -27,8 +30,8 @@ int Layer::paint_dot(LayerObject* object, Point click, int thickness, Color colo
     get_canvas()->get_render_widget()->draw(shape);
 
     //object->fill_bits_from_widget_manager(get_canvas()->get_render_widget());
-    //std::thread thr(&LayerObject::fill_bits_from_widget_manager, object, get_canvas()->get_render_widget());
-    //thr.detach();
+    //std::thread thr(&LayerObject::fill_bits_from_widget_manager, object, get_canvas()->get_render_widget(), NULL);
+    //thr.join();
 
     END_(0);
 }
@@ -36,6 +39,8 @@ int Layer::paint_dot(LayerObject* object, Point click, int thickness, Color colo
 int Layer::paint_rectangle_with_area(LayerObject* object, Color color, bool area, Color outline_color)
 {
     START_;
+
+    static bool threadFinished = true;
 
     int x0 = object->get_start_point().x;
     int y0 = object->get_start_point().y;
@@ -59,8 +64,14 @@ int Layer::paint_rectangle_with_area(LayerObject* object, Color color, bool area
     get_canvas()->get_render_widget()->draw(rectangle);
 
     //object->fill_bits_from_widget_manager(get_canvas()->get_render_widget());
-    //std::thread thr(&LayerObject::fill_bits_from_widget_manager, object, get_canvas()->get_render_widget());
-    //thr.detach();
+
+    /*while(!threadFinished) {
+        asm("nop");
+    }
+    threadFinished = false;
+
+    std::thread thread(&LayerObject::fill_bits_from_widget_manager, object, get_canvas()->get_render_widget(), &threadFinished);
+    thread.detach();*/
 
     END_(0);
 }
@@ -78,7 +89,7 @@ int Layer::paint_text(LayerObject* obj, const char* str, bool scale)
     sf::Font font;
     sf::Text text;
     
-    font.loadFromFile("/usr/share/fonts/fonts-go/Go-Bold.ttf");
+    font.loadFromFile("stream/Go-Mono.ttf");
     text.setCharacterSize(h);
     text.setFont(font);
     text.setFillColor(sf::Color::Black);
@@ -101,8 +112,8 @@ int Layer::paint_text(LayerObject* obj, const char* str, bool scale)
     get_canvas()->get_render_widget()->draw(text);
     //obj->fill_bits_from_widget_manager(get_canvas()->get_render_widget());
 
-    //std::thread thr(&LayerObject::fill_bits_from_widget_manager, obj, get_canvas()->get_render_widget());
-    //thr.detach();
+    //std::thread thr(&LayerObject::fill_bits_from_widget_manager, obj, get_canvas()->get_render_widget(), NULL);
+    //thr.join();
 
     END_(0);
 }
@@ -127,8 +138,8 @@ int Layer::paint_image(LayerObject* obj, const char* str)
     get_canvas()->get_render_widget()->draw(sprite);
 
     //obj->fill_bits_from_widget_manager(get_canvas()->get_render_widget());
-    //std::thread thr(&LayerObject::fill_bits_from_widget_manager, obj, get_canvas()->get_render_widget());
-    //thr.detach();
+    //std::thread thr(&LayerObject::fill_bits_from_widget_manager, obj, get_canvas()->get_render_widget(), NULL);
+    //thr.join();
 
     END_(0);
 }
@@ -227,7 +238,7 @@ int Layer::pour_region(LayerObject* obj, Point click, Color color_into)
     char* array = obj->get_bit_array();
 
 
-    obj->fill_bits_from_widget_manager(get_canvas()->get_render_widget());
+    obj->fill_bits_from_widget_manager(get_canvas()->get_render_widget(), NULL);
 
     recursive_pour_region(array, (int)(click.y - start.y) * w * 4 + (int)(click.x - start.x) * 4, 
                         w, h, color_into);
@@ -296,8 +307,8 @@ int Layer::paint_line(LayerObject* obj, Point prev_click, Point click, int thick
 
     get_canvas()->get_render_widget()->draw(line);
 
-    //std::thread thr(&LayerObject::fill_bits_from_widget_manager, obj, get_canvas()->get_render_widget());
-    //thr.detach();
+    //std::thread thr(&LayerObject::fill_bits_from_widget_manager, obj, get_canvas()->get_render_widget(), NULL);
+    //thr.join();
     //obj->fill_bits_from_widget_manager(get_canvas()->get_render_widget());
 
     END_(0);

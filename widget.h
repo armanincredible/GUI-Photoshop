@@ -6,6 +6,9 @@
 #include "tool.h"
 #include <SFML/Graphics.hpp>
 #include <stdlib.h>
+#include <SFML/Audio.hpp>
+#include <iostream>
+#include "error.h"
 
 enum TypeWidget
 {
@@ -73,6 +76,8 @@ private:
     int passed_time_ = 0;
     bool is_has_timer_ = false;
 
+    sf::Music music_;
+
 public:
     void keyPressEvent(sf::Event *) override;
     void paintEvent() override;
@@ -107,6 +112,33 @@ public:
 
     bool is_need_in_key_events(){return need_in_key_events_;}
     void set_need_in_key_events(bool val){need_in_key_events_ = val;}
+
+    int play_music()
+    {
+        START_;
+        if (!music_.openFromFile("stream/da.ogg"))
+        {
+            PRINT_("Failed to load music: ");
+            END_(-1);
+        }
+
+        music_.play();
+        music_.setVolume(50);
+        END_(0);
+    }
+
+    int change_music_volume(float val)
+    {
+        START_;
+        music_.setVolume(val);
+        END_(0);
+    }
+
+    float get_music_volume()
+    {
+        START_;
+        END_(music_.getVolume());
+    }
 
     WidgetManager(Point start_point, Point end_point,
                   WidgetManager* parent_widget,
@@ -246,6 +278,8 @@ public:
 };
 
 int controller_paint (Button*, WidgetManager*);
+int controller_with_volume_button (Button*, WidgetManager*);
 int StandardWidgetPaint(WidgetManager*);
+int VolumeWidgetPaint(WidgetManager*);
 
 #endif // WIDGET_H
