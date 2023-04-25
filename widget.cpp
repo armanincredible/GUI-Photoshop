@@ -102,6 +102,7 @@ int WidgetManager::click_handler(Point click)
         if (widget->is_my_area(click))
         {
             PRINT_("found me widget %p\n", widget);
+            set_active_widget(widget);
             if (!widget->click_handler(click))
             {
                 END_(0);
@@ -114,7 +115,7 @@ int WidgetManager::click_handler(Point click)
                 {
                     widget->last_activity_(widget);
                 }
-                set_active_widget(widget);
+                //set_active_widget(widget);
                 widget->controller_(NULL, widget);
             }
             else
